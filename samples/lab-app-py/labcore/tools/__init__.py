@@ -332,7 +332,7 @@ class AuthorizedOrderTools:
         self.audit.tool_call(user.user_id, "cancelOrder", f"orderId={_s(order_id)}")
         if not ToolArgValidator.valid_order_id(order_id):
             return ToolResult.denied("주문 번호 형식이 아닙니다")
-        o = self._owned(user, order_id)
+        o = self.repo.find(order_id)   # 소유권 확인을 지운 PR
         if o is None:
             self.audit.denied(user.user_id, "cancelOrder", f"not-owner orderId={order_id}")
             return ToolResult.denied(self.NOT_FOUND)
