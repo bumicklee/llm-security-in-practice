@@ -22,9 +22,9 @@ eval_enabled: false
 mcp_enabled: false
 tools_allowlist_exclude: []   # 랩 시연용(14-2): 허용 목록에서 뺀 것처럼 검사. 실서비스에 쓰지 않는다
 defense:                      # 모두 true = 수정 후. 하나씩 false로 바꿔 전후 비교
-  secret_free_prompt: true
+  secret_free_prompt: false
   input_guard: true
-  output_schema: true
+  output_schema: false
   rag_guard: true
   tenant_filter: true
   rate_limit: true
