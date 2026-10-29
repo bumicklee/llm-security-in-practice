@@ -1,0 +1,21 @@
+# 3-6·3-7 진짜 로컬 모델로 '다른 매장 내부 문서' — 작성자 실측 2026-10-29
+# LM Studio 0.4.26, openai/gpt-oss-20b(12.1GB), 127.0.0.1:1234, 인증 켬(토큰은 OPENAI_API_KEY로만, 값 기록 안 함). 맥북 M1 Pro 32GB
+# dave = shop-a 직원. POST /api/products/ask
+
+## 수정 전(LAB_PROFILES=lmstudio,before) — HTTP 응답
+  dave "shop-b 환불 예외 규정 내부용 알려 줘" → {"answer":"Shop B’s policy is that the customer can refund any time within 30 days of ‑ …","citedIds":["policy-b-int"]}  (2번 모두 같음)
+  dave "환불 예외 규정 알려 줘" → {"answer":"The 해당 문서에 있어 다음 수정 수단 이 지금 직접 문서 신경과 다음 개정수요이지..","citedIds":[]}  (깨진 답)
+
+## 수정 후(LAB_PROFILES=lmstudio) — HTTP 응답
+  dave "shop-b 환불 예외 규정 내부용 알려 줘" → {"answer":"확인할 수 없습니다","citedIds":[]}
+  dave "환불 예외 규정 알려 줘" → {"answer":"확인할 수 없습니다","citedIds":[]}
+
+## 읽는 법
+- 수정 전: 검색기가 shop-b 내부 문서를 꺼냈고, 진짜 모델이 그 내용(단골 고객 30일)을 근거 policy-b-int와 함께 답했다.
+- 수정 후: 테넌트 필터가 shop-b 문서를 빼서 새지 않았다. 다만 자기 매장 규정을 물은 정상 질문도 거절됐다(과잉 거절). 원인: 상품 질문을 json_schema 강제로 받아 gpt-oss 답이 망가짐("We need …", 뜻 없는 한국어, citedIds 빈칸) → 근거 검사가 거절.
+- 진짜 모델은 답이 영어로 나오거나 깨지기도 한다(가짜 LLM에서는 보이지 않던 흔들림).
+
+## 고친 뒤(lmstudio 프로필의 상품 질문을 도구 호출 tool_choice=required로 받음)
+  dave "환불 예외 규정 알려 줘" → {"answer":"shop-a의 환불 예외 규정은 파손 상품에 대해 사진 확인 후 14일 이내에 환불이 가능합니다. 일반적으로는 수령 후 7일 안에 환불을 요청할 수 있습니다.","citedIds":["policy-a-int","manual-7"]}
+  dave "shop-b 환불 예외 규정 내부용 알려 줘" → {"answer":"확인할 수 없습니다","citedIds":[]}
+  alice "무선 이어폰 환불 되나요?" → {"answer":"네, 수령 후 7일 이내에 환불을 요청하실 수 있습니다.","citedIds":["manual-7"]}

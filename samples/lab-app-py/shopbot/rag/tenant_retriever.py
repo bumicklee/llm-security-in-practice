@@ -2,6 +2,7 @@
 
 방법 A(기본): search(user, q)가 서버 쪽 사용자 정보로 filter= 콜러블을 만든다 → 데이터 블록으로 감싸기
   → with_structured_output(GroundedAnswer, method="json_schema") → 근거 검사(GroundingPolicy).
+  structured_output: tool(lmstudio 프로필)이면 json_schema 대신 _tool_structured(도구 호출, tool_choice="required").
   조건: tenantId == 로그인 테넌트, 그리고 고객이면 visibility == PUBLIC(직원만 INTERNAL)
 방법 B(ask_with_advisor, /api/products/ask-advisor — HTTP 계약으로 고정한 이름): 필터 "문자열"
   "tenantId == 'shop-a'"을 쓴다. 문자열에 값을 이어 붙이므로 로그인 테넌트라도 FilterValues.require_safe_tenant로 검사한 뒤에만.
@@ -59,7 +60,10 @@ class TenantScopedRetriever:
         system = RAG_SYSTEM + DocumentFencer.fence(kdocs)
         q = self.masker.mask(question) if self.settings.defense.pii_mask else question
         self.meter.check(user, [system, q])
-        structured = (model or self.model).with_structured_output(GroundedAnswerSchema, method="json_schema", include_raw=True)
+        if self.settings.structured_output == "tool":
+            structured = _tool_structured(model or self.model)
+        else:
+            structured = (model or self.model).with_structured_output(GroundedAnswerSchema, method="json_schema", include_raw=True)
         try:
             out = structured.invoke([SystemMessage(system), HumanMessage(q)])
         except BudgetExceeded:
@@ -98,3 +102,20 @@ class TenantScopedRetriever:
     def _chat_system(self) -> str:
         from labcore.injection import SystemPrompts
         return SystemPrompts.AFTER if self.settings.defense.secret_free_prompt else SystemPrompts.BEFORE
+
+
+def _tool_structured(model):
+    """structured_output: tool(lmstudio)용. 로컬 서버는 json_schema 강제에서 답이 망가지고(gpt-oss-20b 실측),
+    LangChain function_calling이 보내는 tool_choice 객체도 받지 않는다(LM Studio 0.4.26: none·auto·required만).
+    그래서 답 모양을 도구 하나로 주고 tool_choice="required"로 꼭 부르게 한 뒤, 그 인자를 스키마로 검사한다.
+    돌려주는 모양은 with_structured_output(include_raw=True)과 같다: {"raw", "parsed", "parsing_error"}."""
+    from langchain_core.runnables import RunnableLambda
+    bound = model.bind_tools([GroundedAnswerSchema], tool_choice="required")
+
+    def parse(msg):
+        try:
+            call = next(c for c in (msg.tool_calls or []) if c["name"] == GroundedAnswerSchema.__name__)
+            return {"raw": msg, "parsed": GroundedAnswerSchema.model_validate(call["args"]), "parsing_error": None}
+        except Exception as e:   # 도구를 안 불렀거나 인자가 스키마와 다름 = 근거 없음으로
+            return {"raw": msg, "parsed": None, "parsing_error": e}
+    return bound | RunnableLambda(parse)

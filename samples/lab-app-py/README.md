@@ -70,6 +70,25 @@ bash eval-kit/scripts/serve_and_run.sh full eval          # 평가 게이트 GRE
 | Python | 3.14(`.python-version`, Docker `python:3.14.10-slim-trixie`), 최소 3.11 | **3.15**(2026-10-09, 지금 3.15.2) | 3.15는 쓰지 않는다. 잠금 파일의 `pyyaml 6.0.3`·`zstandard 0.25.0`(langgraph·langsmith가 끌어옴)에 **cp315 wheel이 없다**(PyPI 2026-10-28 확인) → `pip install --require-hashes -r requirements.lock`이 소스 빌드로 넘어가 C 컴파일러가 없으면 실패한다. 나머지 컴파일 패키지는 cp315 wheel이 있다(2차 교차 검증 A12) |
 | pytest | 9.1.1 | **9.2.0**(2026-10-27) | 버린 venv에서 9.2.0으로 돌려 봤다: 61 passed · 수정 전 23 failed/26 passed · capstone 9 · contract 10 — 숫자는 같다. `parametrize`의 키워드 전용 변경은 랩에 영향 없음(`ids=`로 씀). **다만 요약 줄에 `13 warnings`가 붙는다**(langsmith 0.14.14의 `asyncio.iscoroutinefunction` DeprecationWarning이 보이게 됨) → 교재·`_실측`의 요약 줄이 달라지므로 지금은 올리지 않는다. 올릴 때 `filterwarnings`를 정하고 `_실측`을 다시 만든다 |
 
+## 로컬 모델(LM Studio)
+
+작성자 실측(2026-10-29, LM Studio 0.4.26, 맥북 M1 Pro 32GB)으로 확인한 설정이다. 교재 2장 2.4.
+
+1. LM Studio에서 모델을 불러온다. 작성자는 `openai/gpt-oss-20b`(12.1GB)와 `qwen3-8b-mlx`(`lmstudio-community/Qwen3-8B-MLX-4bit`)로 쟀다.
+2. 서버 화면(Developer · 창 제목 Model Server) → **Server Settings**: Server Port `1234` · **Require Authentication** 켬(**Manage Tokens**에서 토큰 만들기) · **Serve on Local Network** 끔 · **Allow per-request MCPs**·**Allow calling servers from mcp.json** 끔(랩에 필요 없음).
+3. 토큰은 환경 변수로만 넘긴다(파일·명령 줄에 적지 않는다). 프로필의 `sk-test-FAKE-lmstudio`보다 환경 변수가 이긴다.
+
+```bash
+read -s OPENAI_API_KEY && export OPENAI_API_KEY
+LAB_PROFILES=lmstudio LLM_MODEL=openai/gpt-oss-20b uvicorn shopbot.main:app --host 127.0.0.1 --port 8080
+```
+
+- **`structured_output: "tool"`(`shopbot/profiles/lmstudio.yaml`).** 기본값 `provider`는 도구 목록과 `response_format`(json_schema)을 함께 보낸다. LM Studio 0.4.26에서는 이 조합에서 두 모델 모두 정상 질문 4개를 모두 거절했다(모델이 도구 호출 흉내·속생각을 JSON 안에 씀 → 형식 검사가 막음). `tool`이면 `ToolStrategy(BotReply)`로 최종 답을 "답 제출" 도구 호출로 받고, 모델이 글로 답하면 `reply_from_text`가 정확히 답 모양일 때만 받는다. 바꾼 뒤 gpt-oss-20b는 3개 중 0개 거절이었다. 상품 질문(RAG)도 같은 프로필에서 `bind_tools([GroundedAnswer], tool_choice="required")`로 받는다(LM Studio는 `tool_choice` 객체를 400으로 거절하고, json_schema 강제에서는 gpt-oss 답이 망가졌다).
+- `LLM_BASE_URL=http://127.0.0.1:1234/v1`만 주면 기본 프로필(`provider`)이라 위 거절이 그대로 난다. `LAB_PROFILES=lmstudio`를 쓴다.
+- 출력 상한: `max_completion_tokens=300`·`max_tokens=300` 모두 299토큰·`finish_reason: length`로 끊겼다(`extra_body` 필요 없음).
+- 평가 게이트를 돌릴 때는 `LAB_PROFILES=lmstudio,eval`(수정 전 `lmstudio,before,eval`)로 띄우고, 대상 설정 `eval-kit/targets/shop-bot-py.yaml`의 `timeout_s`를 늘린 사본을 쓴다(작성자는 300). 공개 quick 21개(자리표시 입력): 수정 전 RED 4/21 → 수정 후 GREEN 0/21(178초).
+- 기록: `_실측/1-8_lmstudio-qwen3-8b.txt`·`1-8_lmstudio-gptoss-20b.txt`·`3-6_lmstudio-gptoss-tenant.txt`·`4-4_lmstudio-max-tokens.txt`·`5-1_lmstudio-gptoss-cancel.txt`·`5-5_lmstudio-gptoss-ssrf.txt`·`11-3_lmstudio-gptoss-gate.txt`(작성자가 잰 기록, `capture_all.sh`가 다시 만들지 않는다).
+
 ## 가짜 값
 
 | 종류 | 값 |
@@ -84,5 +103,7 @@ bash eval-kit/scripts/serve_and_run.sh full eval          # 평가 게이트 GRE
 
 - 확인함: pytest(3.14.6·3.11.14), 평가 게이트(full RED 43/50 → GREEN, quick 18/21 → GREEN), 가짜 LLM 녹화 답 대조 68쌍, `docker compose --profile redis up --build`, redis 프로필, mcp 프로필(SDK Client ↔ 가짜 MCP), CI YAML 로컬 확인.
 - 2차 교차 검증 뒤 고친 것(2026-10-28): SSRF IPv6 표기, 저장소 자립(키트 테스트·공격 ID 검사 범위), CI(SHA 고정·잡 독립·요약 잡), `capture_all.sh gaps`(교재 인용 출력 27개), MCP 점검기(SDK Client).
-- [실행 필요]: GitHub Actions 실제 실행, Windows·Linux PC.
-- 【작성자 실측】: LM Studio(`lmstudio` 프로필), 외부 API(`external`), promptfoo·garak 실제 실행.
+- GitHub Actions 실제 실행: 작성자 실측(2026-10-29, GitHub 표준 러너). 공개 저장소에서 PR quick 전체 55초 · main full 전체 1분 25초, 기준선 비교와 `llm-gate` 필수 상태 검사 확인([실행 기록](https://github.com/bumicklee/llm-security-in-practice/actions/runs/40807536475)).
+- [실행 필요]: Windows·Linux PC.
+- LM Studio(`lmstudio` 프로필): 작성자 실측(2026-10-29, LM Studio 0.4.26) — 위 「로컬 모델(LM Studio)」.
+- 【작성자 실측】: 외부 API(`external`), promptfoo·garak 실제 실행, 비공개 세트를 채운 실제 모델 full 실행.

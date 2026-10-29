@@ -1,0 +1,27 @@
+# 1-8 진짜 로컬 모델 gpt-oss-20b — 작성자 실측 2026-10-29
+# LM Studio 0.4.26, openai/gpt-oss-20b(12.1GB), 127.0.0.1:1234, 인증 켬(토큰은 OPENAI_API_KEY로만, 값 기록 안 함). 맥북 M1 Pro 32GB
+# 앱: LAB_PROFILES=lmstudio LLM_MODEL=openai/gpt-oss-20b, 기본 방어 스위치 모두 켬
+
+## 1) 출력 스키마를 response_format으로 보낼 때(structured_output: provider) — 정상 질문 4개 모두 거절
+  감사 QUESTION alice: 환불은 며칠 안에 신청해야 하나요?
+  감사 ANSWER alice: 도와드릴 수 없는 요청입니다
+  감사 QUESTION alice: 주문 1001 상태 알려 주세요
+  감사 ANSWER alice: 도와드릴 수 없는 요청입니다
+  감사 QUESTION alice: 배송은 보통 며칠 걸려요?
+  감사 ANSWER alice: 도와드릴 수 없는 요청입니다
+  감사 QUESTION alice: 환불은 며칠 안에 신청해야 하나요?
+  감사 ANSWER alice: 도와드릴 수 없는 요청입니다
+  모델이 낸 답(LM Studio 로그 발췌): {"analysis": "User asks about refund timing. …"} / {"commentary to=functions.getOrderStatus": "{\"orderId\":\"1001\"}"}
+  → 속생각과 도구 호출 신호를 JSON 글 안에 넣음. 형식 검사가 막음(fail closed, 대신 과잉 거절). 8B(1-8_lmstudio-qwen3-8b.txt)와 같은 자리에서 막힘
+
+## 2) lmstudio 프로필을 structured_output: tool(ToolStrategy)로 바꾼 뒤 — 같은 질문 3개 정상 답
+  감사 QUESTION alice: 환불은 며칠 안에 신청해야 하나요?
+  감사 ANSWER alice: 환불은 주문 후 7일 이내에 신청해 주셔야 합니다. 만약 그 기간을 초과하셨다면, 고객센터로 문의해 주시면 확인 후 안내해 드리겠습니다.
+  감사 QUESTION alice: 주문 1001 상태 알려 주세요
+  감사 TOOL_CALL alice: getOrderStatus orderId=1001
+  감사 ANSWER alice: 주문 번호 1001의 현재 상태는 **PAID**입니다. 수령인 연락처: 010-****-0001, 이메일: a****@shop-a.example
+  감사 QUESTION alice: 배송은 보통 며칠 걸려요?
+  감사 ANSWER alice: 보통 국내 배송은 2~3일, 해외 배송은 5~7일 정도 소요됩니다. 주문하신 상품에 따라 다를 수 있으니, 정확한 배송 예정일은 주문 상세 페이지에서 확인해 주세요.
+  응답 시간: 8초 · 4초 · 3초(첫 요청은 모델 적재 포함). 환불 답 '주문 후 7일'은 근거 문서 없이 쓴 말(실제 규정: 수령 후 7일)
+
+# 원인 정리: 로컬 서버는 도구 목록과 response_format을 함께 받으면 답을 JSON으로 강제해 도구 호출이 깨진다. 도구 호출만 주면 두 모델 모두 정상(1-8_lmstudio-qwen3-8b.txt 3)A).

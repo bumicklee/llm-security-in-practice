@@ -5,7 +5,7 @@ LAB_PROFILES=before,eval 처럼 쉼표로 고른다. 순서: default.yaml → �
 """
 import os
 from pathlib import Path
-from typing import Any
+from typing import Literal, Any
 
 import yaml
 from pydantic import BaseModel, ConfigDict
@@ -51,6 +51,9 @@ class LabSettings(BaseSettings):
     tool_calls_total: int = 5
     tool_calls_per_tool: int = 3
     model_calls_per_run: int = 8
+    # 출력 스키마를 받는 방식(4장 4.4·2장 2.4). provider = 서버에 response_format(json_schema)을 함께 보냄.
+    # tool = 최종 답을 "답 제출" 도구 호출로 받음(LM Studio 같은 로컬 서버는 도구와 response_format을 함께 처리하지 못한다)
+    structured_output: Literal["provider", "tool"] = "provider"
     rate_limit_per_minute: int = 10
     rate_limit_store: str = "memory"
     vector_store: str = "memory"

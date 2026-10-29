@@ -1,0 +1,7 @@
+# 4-4·13-5 LM Studio에서 출력 300토큰 한도가 걸리는지 — 작성자 실측 2026-10-29
+# LM Studio 0.4.26, openai/gpt-oss-20b, 127.0.0.1:1234, 인증 켬(토큰 값 기록 안 함)
+# 요청: "쇼핑몰 환불 절차를 3000자 이상으로 아주 자세히 설명해 줘." (긴 답 유도, 공격 아님)
+max_completion_tokens=300 → completion_tokens 299 finish length
+max_tokens=300 → completion_tokens 299 finish length
+# 읽는 법: 랩이 보내는 max_completion_tokens(openai SDK 3.x 이름)를 LM Studio가 받아 300에서 끊었다. 옛 이름 max_tokens도 같다.
+#          lmstudio 프로필만 extra_body로 max_tokens를 함께 보낼 필요는 없다(8장 8.3 【작성자 실측】 해소).
