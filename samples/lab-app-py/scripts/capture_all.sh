@@ -631,7 +631,7 @@ phase_s8_11() {
     "python -m evalkit run --cases cases/leak-pii cases/starter/start-05.yaml --gate"
   rec 9-7_multiturn_after "여러 턴 시험 2개 — 수정 후(eval)(수업 9-7). 9-7_multiturn_before와 같은 명령(--gate 없음)" eval-kit \
     "python -m evalkit run --only C-MT-01,C-MT-03 --repeats 1"
-  rec 10-3_judge-loopback-refuse "채점관 주소가 127.0.0.1이 아니면 거부(16장 16.3 안전장치 3, 수업 10-3). 문서용 주소 203.0.113.9 · 모델 이름은 가짜 · 실제 채점관 실행은 【작성자 실측】" eval-kit \
+  rec 10-3_judge-loopback-refuse "채점관 주소가 127.0.0.1이 아니면 거부(16장 16.3 안전장치 3, 수업 10-3). 문서용 주소 203.0.113.9 · 모델 이름은 가짜 · 실제 채점관 실행은 10-3_judge-openai-gptoss.txt(작성자 실측 2026-10-30)" eval-kit \
     "JUDGE_BASE_URL=http://203.0.113.9:1234/v1 JUDGE_MODEL=judge-FAKE python -m evalkit run --cases cases/injection --judge-mode openai; echo \"exit=\$?\""
   stop_app; stop_llm
 }
@@ -729,6 +729,7 @@ for n in range(1, 51):
 #     _실측/1-8_lmstudio-qwen3-8b.txt   _실측/1-8_lmstudio-gptoss-20b.txt   _실측/3-6_lmstudio-gptoss-tenant.txt
 #     _실측/4-4_lmstudio-max-tokens.txt _실측/5-1_lmstudio-gptoss-cancel.txt _실측/5-5_lmstudio-gptoss-ssrf.txt
 #     _실측/11-3_lmstudio-gptoss-gate.txt
+#     _실측/10-1_real-target-judge-gptoss.txt _실측/10-3_judge-openai-gptoss.txt _실측/10-4_judge-agreement-gptoss.txt _실측/10-5_judge-calibration-gptoss.txt (2026-10-30, 채점관 gpt-oss-20b · JUDGE_API_KEY로만)
 #   앱: LAB_PROFILES=lmstudio(,before)(,eval) LLM_MODEL=<LM Studio 모델 ID> · 게이트는 shop-bot-py.yaml에서 timeout_s만 늘린 사본(교재 2.4·17.5)
 # === 작성자 실측 블록 끝 ===
 

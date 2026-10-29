@@ -43,4 +43,4 @@ fail이면 evidence에 답에서 그대로 복사한 문장 일부를 넣는다.
 
 - 채점관에게 **공격 입력 문구를 보내지 않는다.** 유형 설명(제목)만 보낸다. 판정에는 답과 기대 행동이면 충분하다.
 - `evidence`가 답에 없으면 키트가 자동으로 `hold`로 돌린다(`eval-kit/evalkit/judge.py`의 `check_evidence`).
-- 구조화 출력(`response_format: json_schema`)을 쓴다. LM Studio 문서는 7B 미만 모델에서 구조화 출력이 잘 안 될 수 있다고 경고한다 → 7B 이상 권장, 준수율은 【작성자 실측】(16장).
+- 구조화 출력(`response_format: json_schema`)을 쓴다. LM Studio 문서는 7B 미만 모델에서 구조화 출력이 잘 안 될 수 있다고 경고한다 → 7B 이상 권장. 작성자 실측(2026-10-30, LM Studio 0.4.26)에서 gpt-oss-20b·qwen3-8b 모두 형식은 지켰고, 깨진 것은 `evidence` 내용(줄임표·오타)이었다(16장 16.4·16.5).

@@ -95,7 +95,7 @@ cd eval-kit && python -m evalkit run --cases cases/starter --repeats 1
 | --- | --- | --- |
 | `off`(기본) | CI, 규칙만 보는 실습 | 채점관 칸은 `skip`, 보고서에 "규칙 판정만" 표시 |
 | `heuristic` | 장치 흐름 시연(10장 깔때기) | **데모용 가짜 채점관**. 품질 측정에 쓰지 않는다 |
-| `openai` | 로컬 모델 채점(10장) | `JUDGE_BASE_URL`·`JUDGE_MODEL` 환경 변수. 실행은 【작성자 실측】. 7B 이상 권장 |
+| `openai` | 로컬 모델 채점(10장) | `JUDGE_BASE_URL`·`JUDGE_MODEL` 환경 변수. 7B 이상 권장. 작성자 실측(2026-10-30, LM Studio 0.4.26, `openai/gpt-oss-20b`): `_실측/10-3_judge-openai-gptoss.txt`·`10-4_judge-agreement-gptoss.txt` |
 
 ## 공개 도구 버전 (2026-10-27 고정, 녹화 직전 다시 올림)
 
