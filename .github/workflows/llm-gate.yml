@@ -167,6 +167,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}
+    defaults:
+      run:
+        working-directory: .
     steps:
       - name: 두 층 결과 모으기
         env:
