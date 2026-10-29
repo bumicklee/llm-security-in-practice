@@ -1,0 +1,6 @@
+# 승인은 다른 요청 — 채팅 요청의 PROPOSED와 승인 요청의 APPROVED가 같은 actionId로 이어진다(11장 11.4, 그림 11-4, 수업 6-4). after 단계의 앱 표준 로그(5-3_approval-after와 같은 실행)
+# 실행 시각: 2026-10-28 12:33:14 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ grep -E '"type": "(PROPOSED|APPROVED)"' .lab-run/app-after.log | sed 's/^.*shopbot.audit //'
+{"requestId": "req-99e929f1", "at": "2026-10-28T00:12:54.195558Z", "type": "PROPOSED", "actor": "bob", "detail": "cancelOrder actionId=2d264761-2d7e-49cf-9ceb-b1fc361ba94c orderId=2001"}
+{"requestId": "req-b96bbdf1", "at": "2026-10-28T00:12:54.281727Z", "type": "APPROVED", "actor": "bob", "detail": "cancelOrder actionId=2d264761-2d7e-49cf-9ceb-b1fc361ba94c orderId=2001"}
+[종료 코드 0]

@@ -1,0 +1,7 @@
+# 공유 앱이면 429가 새는 장면(12장 12.3 '자주 막히는 곳', 수업 7-3). 랩 안 스크립트(scripts/shared_app_demo.py): 같은 앱에서 bob 30번 → 이어서 인젝션 자리표시 요청 → create_app()으로 새 앱에서 같은 요청
+# 실행 시각: 2026-10-28 10:26:06 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python scripts/shared_app_demo.py
+① 같은 앱, bob 30번: 200=10 429=20
+② 같은 앱에 이어서 인젝션 자리표시 요청(bob): 429
+③ create_app()으로 새 앱, 같은 요청(bob): 200
+[종료 코드 0]

@@ -1,0 +1,22 @@
+# 재시도 폭주 — 수정 후(기본 프로필, openai SDK max_retries=1)(8장 8.3, 수업 4-4). 4-2_retry-before와 같은 순서. carol로 보낸다(버킷이 bob과 따로). 실패는 구조화 출력 실패와 같게 정해진 거절 답(200)
+# 실행 시각: 2026-10-28 09:13:02 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -X POST 'http://127.0.0.1:8070/lab/fail?count=20'; echo
+{"failNext":20}
+[종료 코드 0]
+$ curl -s -X POST http://127.0.0.1:8070/lab/reset; echo
+{"reset":true}
+[종료 코드 0]
+$ time curl -s -u carol:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"배송 문의"}' http://127.0.0.1:8080/api/chat -w '\n%{http_code}\n'
+{"intent":"UNKNOWN","orderId":null,"answer":"도와드릴 수 없는 요청입니다"}
+200
+
+real	0m0.553s
+user	0m0.003s
+sys	0m0.004s
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":2,"promptTokens":0,"completionTokens":0,"perSecond":[]}
+[종료 코드 0]
+$ curl -s -X POST 'http://127.0.0.1:8070/lab/fail?count=0'; echo
+{"failNext":0}
+[종료 코드 0]

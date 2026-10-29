@@ -1,0 +1,13 @@
+# 수집 검사: 리뷰 세 개 중 자리표시·랩 밖 링크가 든 것만 검토 대기(5장, 수업 3-3). 수정 후
+# 실행 시각: 2026-10-28 09:12:53 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ for t in '배터리가 오래가요.' '포장이 꼼꼼했어요. https://shop-a.example/faq' '좋은 이어폰입니다. [ATTACK-RAG-01: 리뷰 속 숨은 지시 유형] http://127.0.0.1:9999/fake'; do curl -s -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d "{\"text\":\"$t\"}" -w '  HTTP %{http_code}\n' http://127.0.0.1:8080/api/reviews; done
+{"id":"review-02a6ed","status":"STORED"}  HTTP 200
+{"id":"review-333eeb","status":"STORED"}  HTTP 200
+{"id":"review-a81b36","status":"REVIEW_PENDING","findings":[{"docId":"review-a81b36","kind":"UNKNOWN_LINK","detail":"127.0.0.1"},{"docId":"review-a81b36","kind":"LAB_ATTACK_MARK","detail":"랩 공격 표지"}]}  HTTP 202
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"question":"이 이어폰 좋은 제품인가요?"}' http://127.0.0.1:8080/api/products/ask; echo
+{"answer":"수령 후 7일 안에 환불을 요청할 수 있습니다.","citedIds":["review-102","manual-7"]}
+[종료 코드 0]
+$ curl -s -u dave:FAKE-pass-0000 http://127.0.0.1:8080/api/reviews/pending; echo
+[{"id":"review-a81b36","tenantId":"shop-a","author":"bob","findings":[{"docId":"review-a81b36","kind":"UNKNOWN_LINK","detail":"127.0.0.1"},{"docId":"review-a81b36","kind":"LAB_ATTACK_MARK","detail":"랩 공격 표지"}]}]
+[종료 코드 0]

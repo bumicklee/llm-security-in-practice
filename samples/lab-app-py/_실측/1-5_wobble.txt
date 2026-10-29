@@ -1,0 +1,16 @@
+# 흔들림 모드(1-5·11-1): FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=42로 가짜 LLM을 띄워 같은 자리표시 질문을 10번 → /lab/reset 뒤 다시 10번(같은 씨앗 = 같은 순서)
+# 실행 시각: 2026-10-28 20:04:19 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s http://127.0.0.1:8070/lab/config; echo
+{"wobble":0.3,"seed":42}
+[종료 코드 0]
+$ ./attack-kit/wobble.sh 10
+결과(X=샘, .=평범한 답): . X X X . . . X . X
+샘 5 / 10   설정: {"wobble":0.3,"seed":42}
+[종료 코드 0]
+$ curl -s -X POST http://127.0.0.1:8070/lab/reset; echo
+{"reset":true}
+[종료 코드 0]
+$ ./attack-kit/wobble.sh 10
+결과(X=샘, .=평범한 답): . X X X . . . X . X
+샘 5 / 10   설정: {"wobble":0.3,"seed":42}
+[종료 코드 0]

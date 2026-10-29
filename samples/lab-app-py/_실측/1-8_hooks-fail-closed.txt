@@ -1,0 +1,24 @@
+# Claude Code 훅 자체 시험(2장 실습 3, 수업 1-8). 저장소 루트의 skills/hooks/test-hooks.sh — 깨진 입력·오류도 exit 2(차단). 랩만 있는 저장소면 건너뜀
+# 실행 시각: 2026-10-28 22:20:28 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ if [ -f ../../skills/hooks/test-hooks.sh ]; then (cd ../../skills && bash hooks/test-hooks.sh); else echo '../../skills 없음(랩만 있는 저장소) → 건너뜀'; fi
+block-non-loopback.sh        깨진 JSON                                  exit=2 blocked: hook error, fail closed (JSONDecodeError) 
+block-non-loopback.sh        빈 입력                                   exit=2 blocked: hook error, fail closed (JSONDecodeError) 
+block-non-loopback.sh        JSON 배열(모양 다름)                   exit=2 blocked: hook error, fail closed (TypeError) 
+block-non-loopback.sh        tool_input이 문자열                      exit=2 blocked: hook error, fail closed (TypeError) 
+block-non-loopback.sh        command가 숫자                            exit=2 blocked: hook error, fail closed (TypeError) 
+block-non-loopback.sh        밖 주소(flood.sh)                         exit=2 차단: 공격 실습 명령은 http://127.0.0.1(내 PC의 랩)만 대상으로 합니다. 발견: http://203.0.113.5:8080 
+block-non-loopback.sh        @로 호스트 바꾸기                     exit=2 차단: 공격 실습 명령은 http://127.0.0.1(내 PC의 랩)만 대상으로 합니다. 발견: http://127.0.0.1:8080@203.0.113.5/api/chat 
+block-non-loopback.sh        localhost                                    exit=2 차단: 공격 실습 명령은 http://127.0.0.1(내 PC의 랩)만 대상으로 합니다. 발견: http://localhost:8080/api/chat 
+block-non-loopback.sh        evalkit 밖 대상                           exit=2 차단: 공격 실습 명령은 http://127.0.0.1(내 PC의 랩)만 대상으로 합니다. 발견: http://203.0.113.5 
+block-non-loopback.sh        127.0.0.1(통과)                            exit=0 
+block-non-loopback.sh        관련 없는 명령(통과)                 exit=0 
+block-real-secrets.sh        깨진 JSON                                  exit=2 blocked: hook error, fail closed (JSONDecodeError) 
+block-real-secrets.sh        빈 입력                                   exit=2 blocked: hook error, fail closed (JSONDecodeError) 
+block-real-secrets.sh        tool_input이 목록                         exit=2 blocked: hook error, fail closed (TypeError) 
+block-real-secrets.sh        FAKE 없는 키 모양                       exit=2 차단: 파일에 API 키 모양이(가) 들어갑니다. 랩에서는 FAKE가 들어간 가짜 값만 씁니다(예: sk-test-FAKE-0000). 
+block-real-secrets.sh        FAKE 키(통과)                             exit=0 
+block-real-secrets.sh        평범한 글(통과)                        exit=0 
+block-non-loopback.sh        python3 없음(PATH에 cat만)               exit=2 hooks/block-non-loopback.sh: line 18: python3: command not found blocked: hook error, fail closed (exit 127) 
+block-non-loopback.sh        실행 권한(exec 형식)                   ok
+block-real-secrets.sh        실행 권한(exec 형식)                   ok
+[종료 코드 0]

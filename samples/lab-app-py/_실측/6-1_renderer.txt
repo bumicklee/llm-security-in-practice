@@ -1,0 +1,6 @@
+# 서버 쪽 렌더러(11장 11.1 실습 4, 수업 6-1): 가짜 LLM(ScriptedFakeLlm)이 만든 같은 답을 ReplyRenderer.RAW(수정 전)·ESCAPED(수정 후)로. test_모델이_만든_HTML_태그는…가 보는 바로 그 값
+# 실행 시각: 2026-10-28 12:20:17 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "from labcore.llm import ScriptedFakeLlm, LlmRequest, ChatMessage; from labcore.output import ReplyRenderer; t = ScriptedFakeLlm().call(LlmRequest([ChatMessage.user('[ATTACK-OUT-01: 답에 태그 섞기 유도 유형]')], 0)).text; print('RAW    :', ReplyRenderer.RAW.to_html(t)); print('ESCAPED:', ReplyRenderer.ESCAPED.to_html(t))"
+RAW    : <div class="bot">주문 안내입니다 <mark data-lab-attack="ATTACK-OUT-01">ATTACK-OUT-01</mark></div>
+ESCAPED: <div class="bot">주문 안내입니다 &lt;mark data-lab-attack=&quot;ATTACK-OUT-01&quot;&gt;ATTACK-OUT-01&lt;/mark&gt;</div>
+[종료 코드 0]

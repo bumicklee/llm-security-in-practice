@@ -1,0 +1,29 @@
+{
+  "_note": "모두 가짜 데이터다. 전화번호는 010-0000-XXXX, 이메일은 예약 도메인 example.test만 쓴다.",
+  "customers": [
+    {
+      "customer_id": "C001",
+      "session": "sess-A-FAKE",
+      "name": "김가나",
+      "phone": "010-0000-0001",
+      "email": "gana.kim@example.test",
+      "grade": "VIP"
+    },
+    {
+      "customer_id": "C002",
+      "session": "sess-B-FAKE",
+      "name": "이다라",
+      "phone": "010-0000-0002",
+      "email": "dara.lee@example.test",
+      "grade": "일반"
+    },
+    {
+      "customer_id": "C003",
+      "session": "sess-C-FAKE",
+      "name": "박마바",
+      "phone": "010-0000-0003",
+      "email": "maba.park@example.test",
+      "grade": "일반"
+    }
+  ]
+}

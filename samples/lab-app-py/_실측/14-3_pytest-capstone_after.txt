@@ -1,0 +1,14 @@
+# 22장 종합 실습 pytest — 수정 후(-m capstone). labcore 7개(CouponToolTest 2 + ApprovalSeparationTest 5) + FastAPI 연결 2개
+# 실행 시각: 2026-10-28 09:12:02 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest -m capstone -v 2>&1 | grep -E 'PASSED|FAILED|passed|failed'
+tests/capstone/test_approval_separation.py::test_도구마다_승인자가_다르다 PASSED [ 11%]
+tests/capstone/test_approval_separation.py::test_직원이_스스로_요청한_쿠폰도_본인은_승인할_수_없다 PASSED [ 22%]
+tests/capstone/test_approval_separation.py::test_직원은_쿠폰_요청을_거절할_수_있고_고객_본인은_거절도_승인도_못_한다 PASSED [ 33%]
+tests/capstone/test_approval_separation.py::test_주문_취소는_9장처럼_요청한_고객_본인이_확인한다 PASSED [ 44%]
+tests/capstone/test_approval_separation.py::test_금액_형식은_원_단위_양의_정수만 PASSED [ 55%]
+tests/capstone/test_coupon_approval_api.py::test_쿠폰은_고객_본인이_아니라_같은_매장_직원만_승인한다 PASSED [ 66%]
+tests/capstone/test_coupon_approval_api.py::test_허용_목록에_없는_도구가_붙으면_시작_검사가_잡는다 PASSED [ 77%]
+tests/capstone/test_coupon_tool.py::test_남의_주문에는_쿠폰이_나가지_않고_본인_주문도_직원_승인_전에는_발급되지_않는다 PASSED [ 88%]
+tests/capstone/test_coupon_tool.py::test_금액_한도와_주문당_1회를_넘지_않는다 PASSED [100%]
+======================= 9 passed, 71 deselected in 0.81s =======================
+[종료 코드 0]

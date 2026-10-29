@@ -1,0 +1,13 @@
+# 시작 로그(3장 3.1 수업 2-1, 7장 7.1 수업 4-1): 가짜 LLM·가짜 요금 대시보드·uvicorn(LAB_PROFILES=before) 첫 줄들. 이 Mac은 8090을 다른 앱이 써서 대시보드만 BILL_PORT=18090(2장 '자주 막히는 곳'과 같은 방법)
+# 실행 시각: 2026-10-28 10:26:32 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ head -1 .lab-run/start-fake-llm.log
+[fake-llm] listening on http://127.0.0.1:8070 (가짜 응답·가짜 토큰)
+[종료 코드 0]
+$ head -1 .lab-run/start-bill-board.log
+[bill-board] http://127.0.0.1:18090 (가짜 단가·가짜 예산)
+[종료 코드 0]
+$ grep -vE '"(GET|POST) ' .lab-run/start-app.log | cut -c1-160 | head -12
+INFO:     Started server process [58352]
+INFO:     Waiting for application startup.
+2026-10-28 10:26:10,325 INFO shopbot shop-bot-py 시작 · 프로필 before · 방어 스위치 {'secret_free_prompt': False, 'input_guard': False, 'output_schema': False, 'rag_guard
+[종료 코드 0]

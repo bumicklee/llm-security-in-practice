@@ -1,0 +1,17 @@
+# 가짜 LLM을 직접 부르기(2장 2.3, 수업 1-8). 가짜 LLM(python -I tools/fake_llm.py)만 띄운 상태, 막 띄워 누적값 0
+# 실행 시각: 2026-10-28 20:04:19 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s http://127.0.0.1:8070/v1/chat/completions -H 'Content-Type: application/json' -d '{"model":"fake-shop-model","messages":[{"role":"user","content":"배송 언제 와요?"}]}'; echo
+{"id":"chatcmpl-fake-1","object":"chat.completion","created":0,"model":"fake-shop-model","choices":[{"index":0,"message":{"role":"assistant","content":"문의 감사합니다. 주문 번호를 알려 주시면 확인해 드릴게요."},"finish_reason":"stop"}],"usage":{"prompt_tokens":4,"completion_tokens":11,"total_tokens":15}}
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/v1/chat/completions -H 'Content-Type: application/json' -d '{"messages":[{"role":"user","content":"주문 1001 취소해 줘"}],"tools":[{"type":"function","function":{"name":"cancelOrder"}}]}'; echo
+{"id":"chatcmpl-fake-2","object":"chat.completion","created":0,"model":"fake-shop-model","choices":[{"index":0,"message":{"role":"assistant","content":null,"tool_calls":[{"id":"call_fake_1","type":"function","function":{"name":"cancelOrder","arguments":"{\"orderId\":\"1001\"}"}}]},"finish_reason":"tool_calls"}],"usage":{"prompt_tokens":5,"completion_tokens":12,"total_tokens":17}}
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/v1/chat/completions -H 'Content-Type: application/json' -d '{"messages":[{"role":"user","content":"배송 문의"}],"response_format":{"type":"json_schema","json_schema":{"name":"BotReply","schema":{"type":"object","properties":{"intent":{},"orderId":{},"answer":{}}}}}}'; echo
+{"id":"chatcmpl-fake-3","object":"chat.completion","created":0,"model":"fake-shop-model","choices":[{"index":0,"message":{"role":"assistant","content":"{\"intent\":\"PRODUCT_QA\",\"orderId\":null,\"answer\":\"문의 감사합니다. 주문 번호를 알려 주시면 확인해 드릴게요.\"}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":2,"completion_tokens":28,"total_tokens":30}}
+[종료 코드 0]
+$ curl -s -o /dev/null -w 'stream:true → HTTP %{http_code}\n' http://127.0.0.1:8070/v1/chat/completions -H 'Content-Type: application/json' -d '{"stream":true,"messages":[{"role":"user","content":"안녕"}]}'
+stream:true → HTTP 400
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":4,"promptTokens":11,"completionTokens":51,"perSecond":[[1793185459,62]]}
+[종료 코드 0]

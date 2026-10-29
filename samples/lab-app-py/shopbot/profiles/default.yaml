@@ -1,0 +1,35 @@
+# 기본 설정(수정 후). 대응 장: 2장 2.1·2.4, 8장 8.3·8.5, 11장 11.5
+# 모든 값은 가짜. 실제 키를 이 파일에 쓰지 않는다(환경 변수 OPENAI_API_KEY로만).
+llm_base_url: "http://127.0.0.1:8070/v1"   # 가짜 LLM(tools/fake_llm.py). 환경 변수 LLM_BASE_URL이 이긴다
+openai_api_key: "sk-test-FAKE-0000"        # 가짜 키. 가짜 LLM은 키를 검사하지 않는다
+llm_model: "fake-shop-model"
+max_retries: 1          # openai SDK 재시도. 기본 2(DEFAULT_MAX_RETRIES). 앞단 재시도와 곱해지므로 줄인다(8장 8.3)
+max_tokens: 300         # 최대 출력 토큰(8장 8.3). 요청 본문에는 max_completion_tokens로 나간다(langchain-openai 1.7.3 확인). 호환 서버 지원은 서버마다 확인
+temperature: 0.0
+memory_max_messages: 20 # 대화 창(8장 8.3). trim_messages로 최근 20개만 모델에 보낸다
+tool_calls_total: 5     # ToolCallLimitMiddleware(run_limit). 한 턴 전체
+tool_calls_per_tool: 3  # 도구 하나당
+model_calls_per_run: 8  # ModelCallLimitMiddleware(run_limit)
+rate_limit_per_minute: 10
+rate_limit_store: memory      # memory | redis(redis 프로필, limits 5.8.0)
+vector_store: memory          # memory(InMemoryVectorStore) | redis(redis 프로필)
+fetch_allowed_hosts: [docs.shop.example]   # URL 요약 도구 허용 도메인(가짜). 10장
+link_allowed_hosts: [shop-a.example]       # 답·리뷰에 허용하는 링크 도메인(가짜). 5장
+admin_page_enabled: true                   # SSRF 실습용 가짜 관리 페이지 127.0.0.1:8081
+mgmt_host: "127.0.0.1"                     # 관리 앱(healthz·metrics). 환경 변수 HOST가 이긴다(컨테이너 안 0.0.0.0)
+mgmt_port: 8082
+eval_enabled: false
+mcp_enabled: false
+tools_allowlist_exclude: []   # 랩 시연용(14-2): 허용 목록에서 뺀 것처럼 검사. 실서비스에 쓰지 않는다
+defense:                      # 모두 true = 수정 후. 하나씩 false로 바꿔 전후 비교
+  secret_free_prompt: true
+  input_guard: true
+  output_schema: true
+  rag_guard: true
+  tenant_filter: true
+  rate_limit: true
+  token_budget: true
+  tool_authz: true
+  ssrf_guard: true
+  output_escape: true
+  pii_mask: true

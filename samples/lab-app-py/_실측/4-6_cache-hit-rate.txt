@@ -1,0 +1,7 @@
+# 캐시 적중률 전후 표(8장 8.4, 수업 4-6). labcore ResponseCache 두 구현에 같은 질문 순서. 시맨틱 대신 정규화 문자열 일치(랩 단순화)
+# 실행 시각: 2026-10-28 09:12:07 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -I tools/cache_hit_rate.py
+구현                                 공용 FAQ 적중        개인 질문 적중         남의 답을 받은 적중
+수정 전 SharedKeyCache                19/20 (95%)      19/20 (95%)      15
+수정 후 ScopedCache                   16/20 (80%)      0/20 (0%)        0
+[종료 코드 0]

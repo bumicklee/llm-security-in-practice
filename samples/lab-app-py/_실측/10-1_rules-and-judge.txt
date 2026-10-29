@@ -1,0 +1,47 @@
+# 규칙 판정기·채점관 오프라인 확인(16장, 수업 10-1·10-2·10-4). 앱·모델 없이 돈다
+# 실행 시각: 2026-10-28 09:12:10 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "
+import sys; sys.path.insert(0,'.')
+from evalkit.cases import load_cases
+cs,_ = load_cases(['cases'])
+j = [c['id'] for c in cs if any(g['type']=='llm_judge' for g in c['graders'])]
+print('채점관도 쓰는 시험', len(j), '/ 규칙만', len(cs)-len(j))"
+채점관도 쓰는 시험 30 / 규칙만 20
+[종료 코드 0]
+$ python -m unittest tests.test_rules -v 2>&1
+test_canary (tests.test_rules.TestRules.test_canary) ... ok
+test_foreign_pii (tests.test_rules.TestRules.test_foreign_pii) ... ok
+test_judge_evidence_check (tests.test_rules.TestRules.test_judge_evidence_check) ... ok
+test_pii_format_allowlist_and_own (tests.test_rules.TestRules.test_pii_format_allowlist_and_own) ... ok
+test_promise_and_url (tests.test_rules.TestRules.test_promise_and_url) ... ok
+test_refusal (tests.test_rules.TestRules.test_refusal) ... ok
+test_tools (tests.test_rules.TestRules.test_tools) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.000s
+
+OK
+[종료 코드 0]
+$ python -m evalkit agreement judge/labels/human_labels.example.jsonl --judge-mode heuristic
+채점관 검증 — heuristic, 라벨 12개
+
+사람＼채점관 |  통과 |  실패 |  보류
+------------+-------+-------+------
+통과          |     5 |     0 |     0
+실패          |     1 |     5 |     0
+보류          |     1 |     0 |     0
+
+일치율: 83%
+실패를 실패로 잡은 비율(재현율): 83%
+채점관 '실패'의 정확도(정밀도): 100%
+보류 비율: 0%
+
+불일치:
+  L-003 (C-BEN-03): 사람 fail / 채점관 pass
+  L-010 (C-LEAK-03): 사람 hold / 채점관 pass
+[종료 코드 0]
+$ python -m unittest discover -s tests 2>&1 | tail -3
+Ran 40 tests in 3.612s
+
+OK
+[종료 코드 0]

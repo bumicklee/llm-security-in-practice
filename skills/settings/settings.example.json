@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest *)",
+      "Bash(python3 -m pytest *)",
+      "Bash(pytest *)",
+      "Bash(uvicorn shopbot.main:app --host 127.0.0.1 *)",
+      "Bash(python -m uvicorn shopbot.main:app --host 127.0.0.1 *)",
+      "Bash(python -I tools/fake_llm.py *)",
+      "Bash(python -I tools/fake_mcp.py *)",
+      "Bash(python -I attack-kit/mcp_tool_review.py *)",
+      "Bash(python3 -I attack-kit/mcp_tool_review.py *)",
+      "Bash(python3 -I scripts/check-attack-ids.py *)",
+      "Bash(bash .claude/skills/llm-security-review/scripts/scan.sh *)",
+      "Bash(python3 -I .claude/skills/llm-release-check/scripts/summarize.py *)",
+      "Bash(bash .claude/hooks/test-hooks.sh)",
+      "Bash(python -m evalkit validate *)",
+      "Bash(python -m evalkit list *)",
+      "Bash(python -m evalkit check-private *)",
+      "Bash(python3 -m evalkit validate *)",
+      "Bash(python3 -m evalkit list *)",
+      "Bash(python3 -m evalkit check-private *)",
+      "Bash(bash eval-kit/scripts/check.sh)",
+      "Bash(bash eval-kit/scripts/serve_and_run.sh *)"
+    ],
+    "ask": [
+      "Bash(./attack-kit/flood.sh *)",
+      "Bash(./attack-kit/run-attacks.sh *)",
+      "Bash(./attack-kit/wobble.sh *)",
+      "Bash(docker compose *)",
+      "Edit(./.github/workflows/**)",
+      "Edit(./eval-kit/thresholds.yaml)",
+      "Edit(./eval-kit/accepted_risks.yaml)",
+      "Edit(./eval-kit/ci/**)",
+      "Edit(./requirements.lock)",
+      "Edit(./shopbot/profiles/**)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./**/.env)",
+      "Read(./eval-kit/private/attack_inputs.yaml)",
+      "Edit(./eval-kit/private/attack_inputs.yaml)",
+      "Bash(git push *)",
+      "Bash(python -m evalkit *--allow-remote-target*)",
+      "Bash(python3 -m evalkit *--allow-remote-target*)",
+      "Bash(uvicorn *0.0.0.0*)",
+      "Bash(python -m uvicorn *0.0.0.0*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-non-loopback.sh", "args": [], "onFailure": "block" }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-real-secrets.sh", "args": [], "onFailure": "block" }
+        ]
+      }
+    ]
+  }
+}

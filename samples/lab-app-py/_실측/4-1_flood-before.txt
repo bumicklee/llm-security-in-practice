@@ -1,0 +1,16 @@
+# 요금 폭탄 재현 — 수정 전(레이트 리밋 꺼짐)(7장 7.1, 수업 4-1). 앱·가짜 LLM을 막 띄운 상태. 요금 대시보드(tools/bill_board.py)는 /usage 값으로 '입력 10원/1K + 출력 30원/1K'(가짜 단가)를 그린다 → 마지막 줄은 같은 식
+# 실행 시각: 2026-10-28 09:17:12 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -X POST http://127.0.0.1:8070/lab/reset; echo
+{"reset":true}
+[종료 코드 0]
+$ time ./attack-kit/flood.sh 50
+요청 50번 결과: 200=50  429=0  기타=0
+요금 대시보드: http://127.0.0.1:8090
+
+real	0m1.075s
+user	0m0.162s
+sys	0m0.201s
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage | python -c "import json,sys; d=json.load(sys.stdin); print('requests', d['requests'], 'promptTokens', d['promptTokens'], 'completionTokens', d['completionTokens'], '예상 청구액(가짜 단가)', round(d['promptTokens']/1000*10 + d['completionTokens']/1000*30), '원')"
+requests 50 promptTokens 19851 completionTokens 550 예상 청구액(가짜 단가) 215 원
+[종료 코드 0]

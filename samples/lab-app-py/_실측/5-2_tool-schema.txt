@@ -1,0 +1,6 @@
+# 도구 스키마에서 ToolRuntime 매개변수가 빠지는지(9장 9.3 '자주 막히는 곳', 수업 5-2): cancelOrder 함수의 매개변수와 모델에게 보이는 인자(tool_call_schema). 서버를 띄우지 않음
+# 실행 시각: 2026-10-28 12:20:12 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "from shopbot.main import create_app; from shopbot.settings import load_settings; a=create_app(load_settings(env={}, side_servers=False)); t={x.name: x for x in a.state.lab.tools}['cancelOrder']; print('함수 매개변수:', list(t.func.__code__.co_varnames[:t.func.__code__.co_argcount])); print('모델에게 보이는 인자:', list(t.tool_call_schema.model_json_schema()['properties']))"
+함수 매개변수: ['orderId', 'runtime']
+모델에게 보이는 인자: ['orderId']
+[종료 코드 0]

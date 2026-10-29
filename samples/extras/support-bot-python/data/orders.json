@@ -1,0 +1,50 @@
+{
+  "_note": "모두 가짜 주문이다. 주소는 '가상구 예시로'만 쓴다.",
+  "orders": [
+    {
+      "order_id": "ORD-1001",
+      "customer_id": "C001",
+      "item": "무선 이어폰(가짜 상품)",
+      "status": "배송 중",
+      "recipient": "김가나",
+      "recipient_phone": "010-0000-0001",
+      "address": "서울시 가상구 예시로 1"
+    },
+    {
+      "order_id": "ORD-1002",
+      "customer_id": "C001",
+      "item": "텀블러(가짜 상품)",
+      "status": "결제 완료",
+      "recipient": "김가나",
+      "recipient_phone": "010-0000-0001",
+      "address": "서울시 가상구 예시로 1"
+    },
+    {
+      "order_id": "ORD-2001",
+      "customer_id": "C002",
+      "item": "운동화(가짜 상품)",
+      "status": "배송 준비",
+      "recipient": "이다라",
+      "recipient_phone": "010-0000-0002",
+      "address": "부산시 가상구 예시로 2"
+    },
+    {
+      "order_id": "ORD-2002",
+      "customer_id": "C002",
+      "item": "백팩(가짜 상품)",
+      "status": "결제 완료",
+      "recipient": "이다라",
+      "recipient_phone": "010-0000-0002",
+      "address": "부산시 가상구 예시로 2"
+    },
+    {
+      "order_id": "ORD-3001",
+      "customer_id": "C003",
+      "item": "머그컵(가짜 상품)",
+      "status": "배송 완료",
+      "recipient": "박마바",
+      "recipient_phone": "010-0000-0003",
+      "address": "대구시 가상구 예시로 3"
+    }
+  ]
+}

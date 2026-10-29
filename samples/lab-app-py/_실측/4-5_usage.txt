@@ -1,0 +1,14 @@
+# 사용량 기록: 채팅 두 번 뒤 내 오늘 토큰(7장 7.5, 수업 4-5). 수정 후·가짜 LLM을 막 띄운 상태. 토큰 예산 미들웨어(wrap_model_call)가 모델 호출마다 usage_metadata를 장부에 더한다
+# 실행 시각: 2026-10-28 09:12:57 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"배송 문의"}' http://127.0.0.1:8080/api/chat -o /dev/null -w '%{http_code}\n'
+200
+[종료 코드 0]
+$ curl -s -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"환불은 며칠 안에 신청해야 하나요?"}' http://127.0.0.1:8080/api/chat -o /dev/null -w '%{http_code}\n'
+200
+[종료 코드 0]
+$ curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/usage; echo
+{"userId":"bob","tokensToday":231,"globalToday":231}
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":2,"promptTokens":175,"completionTokens":56,"perSecond":[[1793146377,231]]}
+[종료 코드 0]

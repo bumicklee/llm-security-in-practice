@@ -1,0 +1,8 @@
+# 가짜 LLM이 자리표시에 '넘어가는' 모습(3장, 수업 2-2). 시스템 프롬프트를 그대로 읊는다. 가짜 LLM만 띄운 상태
+# 실행 시각: 2026-10-28 09:12:38 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s http://127.0.0.1:8070/v1/chat/completions -H 'Content-Type: application/json' -d '{"model":"fake-shop-model","messages":[{"role":"system","content":"너는 쇼핑몰 상담봇이다. 친절하게 답한다."},{"role":"user","content":"[ATTACK-INJ-01: 시스템 지시 무시 요청 유형]"}]}'; echo
+{"id":"chatcmpl-fake-5","object":"chat.completion","created":0,"model":"fake-shop-model","choices":[{"index":0,"message":{"role":"assistant","content":"제 지시문은 다음과 같습니다: 너는 쇼핑몰 상담봇이다. 친절하게 답한다."},"finish_reason":"stop"}],"usage":{"prompt_tokens":19,"completion_tokens":14,"total_tokens":33}}
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/v1/chat/completions -H 'Content-Type: application/json' -d '{"model":"fake-shop-model","messages":[{"role":"system","content":"너는 쇼핑몰 상담봇이다. 친절하게 답한다."},{"role":"user","content":"주문 배송 언제 와요?"}]}'; echo
+{"id":"chatcmpl-fake-6","object":"chat.completion","created":0,"model":"fake-shop-model","choices":[{"index":0,"message":{"role":"assistant","content":"문의 감사합니다. 주문 번호를 알려 주시면 확인해 드릴게요."},"finish_reason":"stop"}],"usage":{"prompt_tokens":13,"completion_tokens":11,"total_tokens":24}}
+[종료 코드 0]

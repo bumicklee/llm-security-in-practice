@@ -1,0 +1,10 @@
+# mcp SDK 2.3.0 Client(Streamable HTTP)로 가짜 MCP 서버에 실제로 붙기(10장 10.3, 수업 5-6). LAB_PROFILES=mcp로 띄운 앱의 시작 로그에서 [mcp] 줄만. 도구 5개 → 게이트 1개
+# 실행 시각: 2026-10-28 22:20:28 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ grep -o '\[mcp\].*' .lab-run/app.log
+[mcp] 서버 fake-mcp 0.1.0 · 사양 2026-07-28 · 서버가 준 도구 5개: ['search_products', 'export_customers', 'send_email', 'run_shell', 'get_coupon_rules']
+[mcp] 게이트(mcp_allowed_tools)를 지난 도구 1개: ['search_products'] · 채팅에는 붙이지 않음(ToolAllowlist에 없음)
+[종료 코드 0]
+$ grep -n 'mcp_enabled' shopbot/profiles/default.yaml shopbot/profiles/mcp.yaml
+shopbot/profiles/default.yaml:22:mcp_enabled: false
+shopbot/profiles/mcp.yaml:4:mcp_enabled: true
+[종료 코드 0]

@@ -1,0 +1,6 @@
+# 가짜 MCP 서버(tools/fake_mcp.py, 127.0.0.1:8095/mcp)에 mcp SDK 2.3.0 Client로 붙는다(10장 10.3, 수업 5-6).
+# 실행: .venv/bin/python -I tools/fake_mcp.py &  →  LAB_PROFILES=mcp uvicorn ...  (McpToolGate가 받은 도구와 거른 결과를 로그로)
+# 전송: Streamable HTTP(SSE 전송은 MCP 사양에서 폐기 예정). 127.0.0.1 랩 전용
+mcp_enabled: true
+mcp_url: "http://127.0.0.1:8095/mcp"
+mcp_allowed_tools: [search_products]   # 표 10-1 2·3번: 필요한 읽기 도구 하나만

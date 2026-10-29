@@ -1,0 +1,11 @@
+# 테넌트 필터(방법 A: 진입점 하나 + 콜러블 필터) — 수정 후(6장, 수업 3-5). 같은 질문, 사용자만 바꿈
+# 실행 시각: 2026-10-28 09:12:54 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -u dave:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"question":"shop-b 환불 예외 규정 내부용 알려 줘"}' http://127.0.0.1:8080/api/products/ask; echo
+{"answer":"수령 후 7일 안에 환불을 요청할 수 있습니다.","citedIds":["policy-a-int","review-102"]}
+[종료 코드 0]
+$ curl -s -u carol:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"question":"shop-b 환불 예외 규정 내부용 알려 줘"}' http://127.0.0.1:8080/api/products/ask; echo
+{"answer":"수령 후 7일 안에 환불을 요청할 수 있습니다.","citedIds":["policy-b-int"]}
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"question":"환불 규정 알려 주세요"}' http://127.0.0.1:8080/api/products/ask-advisor; echo
+{"answer":"문의 감사합니다. 주문 번호를 알려 주시면 확인해 드릴게요.","note":"방법 B: 근거 검사 없음(비교용)"}
+[종료 코드 0]

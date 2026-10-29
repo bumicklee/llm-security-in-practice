@@ -1,0 +1,10 @@
+# 키트가 127.0.0.1 밖을 거부하는가(2장, 수업 1-8). 앱을 띄우지 않아도 된다
+# 실행 시각: 2026-10-28 09:12:09 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ ./attack-kit/flood.sh 3 http://example.com:8080; echo "exit=$?"
+거부: 대상은 http://127.0.0.1(내 PC의 랩)만 허용합니다. 받은 값: http://example.com:8080
+exit=2
+[종료 코드 0]
+$ python -I attack-kit/run_attacks.py http://localhost:8080 attack-kit/attack-cases.json; echo "exit=$?"
+거부: 대상은 http://127.0.0.1(내 PC의 랩)만 허용합니다. 받은 값: http://localhost:8080
+exit=1
+[종료 코드 0]

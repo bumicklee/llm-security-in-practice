@@ -1,0 +1,10 @@
+# 프롬프트 원문 로그 위험(11장 11.5, 수업 6-5): 앱이 시작할 때 보는 트레이싱 환경 변수와 set_debug. 이름은 langsmith 0.14.14 utils.tracing_is_enabled 소스로 확인
+# 실행 시각: 2026-10-28 09:12:07 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ grep -n 'TRACING_ENV =\|get_debug()\|if not s.profiles or' shopbot/main.py
+48:TRACING_ENV = ("LANGSMITH_TRACING_V2", "LANGSMITH_TRACING", "LANGCHAIN_TRACING_V2", "LANGCHAIN_TRACING")
+58:    if get_debug():
+63:    if not s.profiles or "eval" in s.profiles:   # 기본(수정 후)·eval 프로필
+[종료 코드 0]
+$ env | grep -cE '^(LANGSMITH|LANGCHAIN)_TRACING' || true
+0
+[종료 코드 0]

@@ -1,0 +1,6 @@
+# Redis 8(compose의 vector-db, redis:8.10.3): 벡터 검색(6장 방법 B), 레이트 리밋 저장소(limits). 실행:
+#   docker compose --profile redis up -d vector-db  →  LAB_PROFILES=redis uvicorn shopbot.main:app --host 127.0.0.1 --port 8080
+#   (호스트 포트를 바꿨다면 REDIS_URL=redis://127.0.0.1:16379/0)
+rate_limit_store: redis
+vector_store: redis
+redis_url: "redis://127.0.0.1:6379/0"

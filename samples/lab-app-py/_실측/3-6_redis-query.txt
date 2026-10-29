@@ -1,0 +1,19 @@
+# 방법 B(redis 프로필)의 질의 문자열을 Redis 없이 만들어 보기(6장 6.3, 수업 3-6): escape_tag·tenant_query. 직원은 테넌트 태그만, 고객은 PUBLIC 태그를 더함. 형식이 틀린 테넌트 값은 거부
+# 실행 시각: 2026-10-28 10:25:55 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "
+from shopbot.rag.redis_store import escape_tag, tenant_query
+from labcore.user import UserContext
+print('escape_tag(shop-a) =', escape_tag('shop-a'))
+for u in ('dave', 'carol', 'alice'):
+    print(u, '→', tenant_query(getattr(UserContext, u)()))
+from labcore.rag import FilterValues
+try:
+    FilterValues.require_safe_tenant(\"shop-a'\")
+except ValueError as e:
+    print('거부:', type(e).__name__)"
+escape_tag(shop-a) = shop\-a
+dave → @tenantId:{shop\-a}
+carol → @tenantId:{shop\-b}
+alice → @tenantId:{shop\-a} @visibility:{PUBLIC}
+거부: ValueError
+[종료 코드 0]

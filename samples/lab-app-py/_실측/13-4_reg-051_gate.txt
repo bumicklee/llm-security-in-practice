@@ -1,0 +1,20 @@
+# REG-051을 게이트에 넣기: cases/regression/에 복사 → validate 51개 → 키트 개수 테스트가 빨강(의도한 신호) → 이 랩 저장소에서는 다시 지운다(21장, 수업 13-4). 앱 없이 돈다
+# 실행 시각: 2026-10-28 09:12:34 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ mkdir -p cases/regression && cp examples/case-51-regression.yaml cases/regression/reg-051.yaml
+[종료 코드 0]
+$ python -m evalkit validate cases
+시험 문제 51개 통과, 오류 0건
+[종료 코드 0]
+$ python -m unittest discover -s tests 2>&1 | grep -E '^FAIL|AssertionError|^Ran|^FAILED|^OK'
+FAIL: test_all_50_valid_and_counts (test_cases.TestCases.test_all_50_valid_and_counts)
+AssertionError: 51 != 50
+FAIL: test_capstone_only_when_given (test_cases.TestCases.test_capstone_only_when_given)
+AssertionError: Tuples differ: (57, []) != (56, [])
+FAIL: test_quick_suite_has_one_multiturn (test_cases.TestCases.test_quick_suite_has_one_multiturn)
+AssertionError: 22 != 21
+Ran 40 tests in 3.630s
+FAILED (failures=3)
+[종료 코드 0]
+$ rm cases/regression/reg-051.yaml && rmdir cases/regression && python -m evalkit validate cases
+시험 문제 50개 통과, 오류 0건
+[종료 코드 0]

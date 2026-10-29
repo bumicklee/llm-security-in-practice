@@ -1,0 +1,14 @@
+# 같은 디버그 한 줄을 기본 프로필(수정 후) 앱에서 켜면 시작을 거부한다(fail closed, 11장 11.5, 수업 6-5). TestClient가 lifespan을 시작할 때 멈춘다. 둘째 명령은 같은 일을 한 줄로(with 대신 c.__enter__(), 강의 화면)
+# 실행 시각: 2026-10-28 22:21:03 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "
+from langchain_core.globals import set_debug
+set_debug(True)
+from tests.app.conftest import make_client
+c, _, _ = make_client()
+with c:
+    print('뜸')" 2>&1 | grep -o 'PromptLoggingRefused: .*'
+PromptLoggingRefused: 프롬프트 원문이 밖으로 나갈 수 있는 설정이 켜져 있습니다: ['langchain_core.globals.set_debug(True)'] → 기본·eval 프로필에서는 시작하지 않습니다(11.5)
+[종료 코드 0]
+$ python -c "from langchain_core.globals import set_debug; set_debug(True); from tests.app.conftest import make_client; c, _, _ = make_client(); c.__enter__(); print('뜸')" 2>&1 | grep -o 'PromptLoggingRefused: .*'
+PromptLoggingRefused: 프롬프트 원문이 밖으로 나갈 수 있는 설정이 켜져 있습니다: ['langchain_core.globals.set_debug(True)'] → 기본·eval 프로필에서는 시작하지 않습니다(11.5)
+[종료 코드 0]

@@ -1,0 +1,10 @@
+# 겹 방어: 입력 가드만 끄면(LAB_DEFENSE_OFF=input_guard) 4,000자 요청을 다음 겹 토큰 예산 미들웨어(wrap_model_call)가 받는다(4장 4.3, 수업 2-5). 나머지는 수정 후. long.json은 2-4에서 만든 파일
+# 실행 시각: 2026-10-28 09:17:04 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -i -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d @long.json http://127.0.0.1:8080/api/chat | grep -iE '^HTTP|^\{'; echo
+HTTP/1.1 429 Too Many Requests
+{"error":"TOKEN_BUDGET","reason":"REQUEST_TOO_LARGE","remainingTokens":20000,"answer":"질문과 대화 기록이 너무 깁니다. 새 대화로 짧게 다시 물어봐 주세요."}
+
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":0,"promptTokens":0,"completionTokens":0,"perSecond":[]}
+[종료 코드 0]

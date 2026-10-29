@@ -1,0 +1,8 @@
+# 액션 SHA 고정(.github/workflows/llm-gate.yml)을 손으로 갱신하지 않도록 Dependabot이 PR을 연다(19장, 2차 교차 검증 A18).
+# PR은 다른 PR과 똑같이 llm-gate를 지나야 머지된다. pip 잠금 파일은 녹화 전 손으로 다시 만든다(21장 21.3) → 여기서는 액션만.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

@@ -1,0 +1,20 @@
+# 22장 종합 실습 pytest — 수정 전(-m capstone --lab-target=before). 쿠폰 도구 테스트 2개가 빨강(labcore), FastAPI 연결 1개도 빨강
+# 실행 시각: 2026-10-28 09:12:04 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest -m capstone --lab-target=before -v --tb=short 2>&1 | grep -E 'PASSED|FAILED|^E +AssertionError|passed|failed'
+tests/capstone/test_approval_separation.py::test_도구마다_승인자가_다르다 PASSED [ 11%]
+tests/capstone/test_approval_separation.py::test_직원이_스스로_요청한_쿠폰도_본인은_승인할_수_없다 PASSED [ 22%]
+tests/capstone/test_approval_separation.py::test_직원은_쿠폰_요청을_거절할_수_있고_고객_본인은_거절도_승인도_못_한다 PASSED [ 33%]
+tests/capstone/test_approval_separation.py::test_주문_취소는_9장처럼_요청한_고객_본인이_확인한다 PASSED [ 44%]
+tests/capstone/test_approval_separation.py::test_금액_형식은_원_단위_양의_정수만 PASSED [ 55%]
+tests/capstone/test_coupon_approval_api.py::test_쿠폰은_고객_본인이_아니라_같은_매장_직원만_승인한다 FAILED [ 66%]
+tests/capstone/test_coupon_approval_api.py::test_허용_목록에_없는_도구가_붙으면_시작_검사가_잡는다 PASSED [ 77%]
+tests/capstone/test_coupon_tool.py::test_남의_주문에는_쿠폰이_나가지_않고_본인_주문도_직원_승인_전에는_발급되지_않는다 FAILED [ 88%]
+tests/capstone/test_coupon_tool.py::test_금액_한도와_주문당_1회를_넘지_않는다 FAILED [100%]
+E   AssertionError: assert '직원 승인 후 발급' in '주문 1001 쿠폰 5000원 발급 완료'
+E   AssertionError: 남의 주문(bob → 1001)
+E   AssertionError: 10,001원(한도 1만 원 초과)
+FAILED tests/capstone/test_coupon_approval_api.py::test_쿠폰은_고객_본인이_아니라_같은_매장_직원만_승인한다
+FAILED tests/capstone/test_coupon_tool.py::test_남의_주문에는_쿠폰이_나가지_않고_본인_주문도_직원_승인_전에는_발급되지_않는다
+FAILED tests/capstone/test_coupon_tool.py::test_금액_한도와_주문당_1회를_넘지_않는다
+================== 3 failed, 6 passed, 71 deselected in 0.90s ==================
+[종료 코드 0]

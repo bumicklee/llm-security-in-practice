@@ -1,0 +1,8 @@
+# 모델 쪽에 무엇이 도착하나 — 수정 전(pii_mask 꺼짐)(11장 11.2, 수업 6-2). 가짜 LLM LOG_PROMPTS=1
+# 실행 시각: 2026-10-28 09:17:09 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"제 번호는 010-1234-5678 이에요. 배송 문의"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"UNKNOWN","orderId":null,"answer":"처리 결과: 주문을 찾을 수 없습니다"}
+[종료 코드 0]
+$ grep '^\[fake-llm\] user' .lab-run/fake-llm.log | tail -1 | cut -c1-80
+[fake-llm] user: 제 번호는 010-1234-5678 이에요. 배송 문의
+[종료 코드 0]

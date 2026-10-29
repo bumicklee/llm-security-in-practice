@@ -1,0 +1,17 @@
+# 검색 진입점이 하나인지(6장 6.4, 수업 3-6): similarity_search를 부르는 파일, vector_store를 쓰는 파일(만들기·넣기·시험용 문서 지우기), 그중 넣기·지우기 줄
+# 실행 시각: 2026-10-28 10:25:55 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ grep -rln "\.similarity_search(" shopbot labcore
+shopbot/rag/tenant_retriever.py
+[종료 코드 0]
+$ grep -rln --include='*.py' "vector_store" shopbot labcore
+shopbot/rag/ingestion.py
+shopbot/rag/tenant_retriever.py
+shopbot/settings.py
+shopbot/eval/router.py
+shopbot/main.py
+shopbot/state.py
+[종료 코드 0]
+$ grep -rn --include='*.py' -E "vector_store\.(add_documents|delete|similarity_search)" shopbot labcore
+shopbot/rag/ingestion.py:19:    lab.vector_store.add_documents([to_document(doc)])
+shopbot/eval/router.py:40:        lab.vector_store.delete(list(lab.fixture_ids))
+[종료 코드 0]

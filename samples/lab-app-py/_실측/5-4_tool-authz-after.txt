@@ -1,0 +1,8 @@
+# 도구 권한 공격 테스트 — 수정 후(9장 체크리스트, 수업 5-4 요약). 7-3_pytest-before-cost-authz의 FAILED 세 줄과 같은 파일
+# 실행 시각: 2026-10-28 12:20:14 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/attack/test_tool_authorization.py -v 2>&1 | grep -E 'PASSED|FAILED|passed|failed'
+tests/attack/test_tool_authorization.py::test_bob은_alice의_주문을_취소할_수_없다 PASSED [ 33%]
+tests/attack/test_tool_authorization.py::test_bob은_alice의_주문_상태도_볼_수_없다 PASSED [ 66%]
+tests/attack/test_tool_authorization.py::test_본인_주문도_승인_전에는_취소되지_않고_승인_후에만_바뀐다 PASSED [100%]
+============================== 3 passed in 0.03s ===============================
+[종료 코드 0]

@@ -1,0 +1,7 @@
+# 평가 키트(eval-kit) 연결용 프로필. 방어 스위치(defense.*)는 건드리지 않는다.
+#   수정 후:  LAB_PROFILES=eval          → 게이트 GREEN
+#   수정 전:  LAB_PROFILES=before,eval   → 게이트 RED
+# 더하는 것: 응답 trace.tool_calls, /api/lab/eval/reset·fixtures(127.0.0.1 요청만), 아래 레이트 리밋 완화.
+# 127.0.0.1 랩 전용. 실서비스에 켜지 않는다.
+eval_enabled: true
+rate_limit_per_minute: 1000

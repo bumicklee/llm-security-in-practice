@@ -1,0 +1,18 @@
+# redis 프로필(벡터 검색 = Redis 8 검색·TAG 필터, 레이트 리밋 = limits 5.8.0 + Redis)을 컨테이너에서: LAB_PROFILES=redis docker compose --profile redis up -d shop-bot. 방법 B 질의 문자열은 @tenantId:{shop\-a}처럼 이스케이프
+# 실행 시각: 2026-10-28 07:41:03 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ LAB_PROFILES=redis REDIS_HOST_PORT=16379 BILL_BOARD_PORT=18090 docker compose --profile redis up -d shop-bot 2>&1 | tail -1; for i in $(seq 1 40); do curl -sf http://127.0.0.1:8082/healthz > /dev/null && break; sleep 0.5; done; echo ready
+ Container shop-bot-py-lab-shop-bot-1  Started
+ready
+[종료 코드 0]
+$ curl -s -u dave:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"question":"shop-b 환불 예외 규정 내부용 알려 줘"}' http://127.0.0.1:8080/api/products/ask; echo
+{"answer":"수령 후 7일 안에 환불을 요청할 수 있습니다.","citedIds":["policy-a-int","review-102"]}
+[종료 코드 0]
+$ curl -s -u carol:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"question":"shop-b 환불 예외 규정 내부용 알려 줘"}' http://127.0.0.1:8080/api/products/ask; echo
+{"answer":"수령 후 7일 안에 환불을 요청할 수 있습니다.","citedIds":["policy-b-int"]}
+[종료 코드 0]
+$ for i in $(seq 1 12); do curl -s -o /dev/null -w '%{http_code} ' -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"배송 문의"}' http://127.0.0.1:8080/api/chat; done; echo
+200 200 200 200 200 200 200 200 200 200 429 429 
+[종료 코드 0]
+$ docker compose exec -T vector-db redis-cli FT._LIST
+shop-docs
+[종료 코드 0]

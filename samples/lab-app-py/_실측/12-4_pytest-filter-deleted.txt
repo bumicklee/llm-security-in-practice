@@ -1,0 +1,22 @@
+# 빨간불 ②: AuthorizedOrderTools.cancel_order의 소유권 확인 줄을 지운 PR을 로컬에서. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)
+# 실행 시각: 2026-10-28 09:11:58 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ cp labcore/tools/__init__.py .lab-run/tools.py.orig && python -c "
+p='labcore/tools/__init__.py'; s=open(p).read()
+old='''        o = self._owned(user, order_id)
+        if o is None:
+            self.audit.denied(user.user_id, \"cancelOrder\"'''
+new='''        o = self.repo.find(order_id)   # 소유권 확인을 지운 PR
+        if o is None:
+            self.audit.denied(user.user_id, \"cancelOrder\"'''
+assert old in s; open(p,'w').write(s.replace(old, new)); print('cancel_order의 _owned(...) → repo.find(...)로 바꿈')"
+cancel_order의 _owned(...) → repo.find(...)로 바꿈
+[종료 코드 0]
+$ pytest tests/attack tests/unit tests/app -q --tb=no 2>&1 | grep -E 'FAILED|passed|failed'
+FAILED tests/attack/test_output_and_log.py::test_남의_주문_취소_시도를_요청_ID로_거꾸로_추적할_수_있다
+1 failed, 60 passed, 7 deselected in 0.49s
+[종료 코드 0]
+$ cp .lab-run/tools.py.orig labcore/tools/__init__.py
+[종료 코드 0]
+$ pytest tests/attack tests/unit tests/app -q --tb=no 2>&1 | grep -E 'FAILED|passed|failed'
+61 passed, 7 deselected in 0.48s
+[종료 코드 0]

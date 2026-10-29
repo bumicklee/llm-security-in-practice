@@ -1,0 +1,25 @@
+# 레이트 리밋: bob 50번 → 10번 뒤 429, 바로 이어서 alice는 200(8장 8.1, 수업 4-3). 키는 인증된 사용자 ID(IP 아님). 수정 후·가짜 LLM을 막 띄운 상태
+# 실행 시각: 2026-10-28 09:12:59 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -X POST http://127.0.0.1:8070/lab/reset; echo
+{"reset":true}
+[종료 코드 0]
+$ ./attack-kit/flood.sh 50
+요청 50번 결과: 200=10  429=40  기타=0
+요금 대시보드: http://127.0.0.1:8090
+[종료 코드 0]
+$ curl -s -i -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"배송 문의"}' http://127.0.0.1:8080/api/chat | grep -iE '^HTTP|^retry-after|^x-ratelimit|^\{'; echo
+HTTP/1.1 429 Too Many Requests
+retry-after: 5
+x-ratelimit-remaining: 0
+{"error":"RATE_LIMITED","retryAfterSeconds":5}
+
+[종료 코드 0]
+$ curl -s -i -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"배송 문의"}' http://127.0.0.1:8080/api/chat | grep -iE '^HTTP|^x-ratelimit|^\{'; echo
+HTTP/1.1 200 OK
+x-ratelimit-remaining: 9
+{"intent":"PRODUCT_QA","orderId":null,"answer":"문의 감사합니다. 주문 번호를 알려 주시면 확인해 드릴게요."}
+
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage | python -c "import json,sys; d=json.load(sys.stdin); print('requests', d['requests'], 'promptTokens', d['promptTokens'], 'completionTokens', d['completionTokens'], '예상 청구액(가짜 단가)', round(d['promptTokens']/1000*10 + d['completionTokens']/1000*30), '원')"
+requests 11 promptTokens 2160 completionTokens 308 예상 청구액(가짜 단가) 31 원
+[종료 코드 0]

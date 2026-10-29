@@ -1,0 +1,14 @@
+# 빨간불 ①의 설정 PR(default.yaml에서 secret_free_prompt·output_schema를 false로)을 pytest 잡에 넣으면: 앱 테스트가 잡는다. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)
+# 실행 시각: 2026-10-28 22:19:57 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ cp shopbot/profiles/default.yaml .lab-run/default.yaml.orig && sed -i.bak 's/  secret_free_prompt: true/  secret_free_prompt: false/; s/  output_schema: true/  output_schema: false/' shopbot/profiles/default.yaml && rm -f shopbot/profiles/default.yaml.bak && grep -nE 'secret_free_prompt:|output_schema:' shopbot/profiles/default.yaml
+25:  secret_free_prompt: false
+27:  output_schema: false
+[종료 코드 0]
+$ pytest tests/attack tests/unit tests/app -q --tb=no 2>&1 | grep -E 'FAILED|passed|failed'
+FAILED tests/app/test_shopbot_security.py::test_직접_인젝션에도_가짜_할인_코드와_카나리가_새지_않는다
+1 failed, 60 passed, 7 deselected in 0.55s
+[종료 코드 0]
+$ cp .lab-run/default.yaml.orig shopbot/profiles/default.yaml && grep -nE 'secret_free_prompt:|output_schema:' shopbot/profiles/default.yaml
+25:  secret_free_prompt: true
+27:  output_schema: true
+[종료 코드 0]

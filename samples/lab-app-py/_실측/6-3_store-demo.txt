@@ -1,0 +1,17 @@
+# 대화 기록 보관(11장 11.3 실습 2, 수업 6-3): test_보관_기간이_지나면_지운다와 같은 순서를 한 줄씩 찍기. 시계를 주입하고 31일 돌린 뒤 30일 기준으로 지운다. 번호는 가짜 값
+# 실행 시각: 2026-10-28 12:20:17 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "
+from datetime import datetime, timedelta, timezone
+from labcore.output import ConversationStore, PiiMasker
+now = [datetime(2026, 10, 1, tzinfo=timezone.utc)]
+store = ConversationStore(lambda: now[0], PiiMasker())
+store.save('alice', '제 번호 010-1234-5678')
+print('저장된 것:', [(t.user_id, t.at.date().isoformat(), t.masked_text) for t in store.all()])
+now[0] = now[0] + timedelta(days=31)
+store.save('alice', '새 질문')
+print('31일 뒤 purge_older_than(30일) → 지운 개수', store.purge_older_than(timedelta(days=30)))
+print('남은 것:', [(t.user_id, t.at.date().isoformat(), t.masked_text) for t in store.all()])"
+저장된 것: [('alice', '2026-10-01', '제 번호 010-****-5678')]
+31일 뒤 purge_older_than(30일) → 지운 개수 1
+남은 것: [('alice', '2026-11-01', '새 질문')]
+[종료 코드 0]

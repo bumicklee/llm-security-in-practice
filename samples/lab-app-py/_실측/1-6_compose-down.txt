@@ -1,0 +1,26 @@
+# docker compose --profile redis down
+# 실행 시각: 2026-10-28 20:05:18 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ REDIS_HOST_PORT=16379 BILL_BOARD_PORT=18090 docker compose --profile redis down 2>&1
+ Container shop-bot-py-lab-bill-board-1  Stopping
+ Container shop-bot-py-lab-vector-db-1  Stopping
+ Container shop-bot-py-lab-fake-mcp-1  Stopping
+ Container shop-bot-py-lab-shop-bot-1  Stopping
+ Container shop-bot-py-lab-vector-db-1  Stopped
+ Container shop-bot-py-lab-vector-db-1  Removing
+ Container shop-bot-py-lab-vector-db-1  Removed
+ Container shop-bot-py-lab-fake-mcp-1  Stopped
+ Container shop-bot-py-lab-fake-mcp-1  Removing
+ Container shop-bot-py-lab-fake-mcp-1  Removed
+ Container shop-bot-py-lab-shop-bot-1  Stopped
+ Container shop-bot-py-lab-shop-bot-1  Removing
+ Container shop-bot-py-lab-shop-bot-1  Removed
+ Container shop-bot-py-lab-bill-board-1  Stopped
+ Container shop-bot-py-lab-bill-board-1  Removing
+ Container shop-bot-py-lab-bill-board-1  Removed
+ Container shop-bot-py-lab-fake-llm-1  Stopping
+ Container shop-bot-py-lab-fake-llm-1  Stopped
+ Container shop-bot-py-lab-fake-llm-1  Removing
+ Container shop-bot-py-lab-fake-llm-1  Removed
+ Network shop-bot-py-lab_default  Removing
+ Network shop-bot-py-lab_default  Removed
+[종료 코드 0]

@@ -1,0 +1,15 @@
+# 캐시 격리 — 수정 후(8장 8.4, 수업 4-6). 같은 파일
+# 실행 시각: 2026-10-28 10:26:00 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/attack/test_cache_isolation.py -v
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.7.0 -- ./.venv/bin/python3.14
+lab-target: after(수정 후)
+rootdir: .
+configfile: pyproject.toml
+plugins: anyio-4.15.1, langsmith-0.14.14
+collecting ... collected 1 item
+
+tests/attack/test_cache_isolation.py::test_비슷한_질문이라도_남의_주문_답이_캐시에서_나오지_않는다 PASSED [100%]
+
+============================== 1 passed in 0.02s ===============================
+[종료 코드 0]

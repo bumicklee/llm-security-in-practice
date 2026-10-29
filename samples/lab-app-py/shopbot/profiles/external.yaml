@@ -1,0 +1,5 @@
+# 외부 유료 API(선택). 요금이 든다. 키는 환경 변수로만: export OPENAI_API_KEY=...  모델: export LLM_MODEL=...
+# 실행 전 제공사 콘솔에서 월 사용 한도를 먼저 건다(8장 8.6). 모델 이름은 녹화 직전에 공식 문서로 확인한다.
+llm_base_url: "https://api.openai.com/v1"
+openai_api_key: null     # 기본값 없음: 환경 변수가 없으면 시작 실패 = 가짜 키를 외부로 보내지 않음
+llm_model: null

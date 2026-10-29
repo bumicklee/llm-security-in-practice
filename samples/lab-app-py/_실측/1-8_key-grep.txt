@@ -1,0 +1,4 @@
+# 진짜처럼 보이는 키가 섞였는지(2장 실습 2, 수업 1-8). 출력 없음 + 종료 코드 1이 정상(FAKE가 든 가짜 값만 있다)
+# 실행 시각: 2026-10-28 10:25:50 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ grep -rEn "\bsk-[A-Za-z0-9_-]{6,}" --include='*.py' --include='*.yaml' --include='*.json' --exclude-dir=.venv --exclude-dir=results . | grep -v FAKE
+[종료 코드 1]

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+eval-kit/results/
+eval-kit/.fake-llm.log
+eval-kit/.shop-bot.log
+eval-kit/private/attack_inputs.yaml
+long.json
+.lab-run/

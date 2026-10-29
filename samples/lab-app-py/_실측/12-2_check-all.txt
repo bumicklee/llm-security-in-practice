@@ -1,0 +1,38 @@
+# 마지막 점검(12-2) — pytest 1~21장 + 22장 capstone + 계약·대조, 키트 단위 테스트, check.sh(5단계), 다른 스택 단위 테스트, 공격 ID 등록부(인자 없음 = 랩 폴더만). 앱 없이 돈다. 공개 저장소 clone과 작성자 폴더에서 같은 출력
+# 실행 시각: 2026-10-28 22:20:00 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest -q 2>&1 | tail -1
+61 passed, 19 deselected in 1.35s
+[종료 코드 0]
+$ pytest -m capstone -q 2>&1 | tail -1
+9 passed, 71 deselected in 0.83s
+[종료 코드 0]
+$ pytest -m contract -q 2>&1 | tail -1
+10 passed, 70 deselected in 2.13s
+[종료 코드 0]
+$ (cd eval-kit && python -m unittest discover -s tests 2>&1 | tail -3)
+Ran 40 tests in 3.676s
+
+OK
+[종료 코드 0]
+$ bash eval-kit/scripts/check.sh
+[1/5] 문법 검사
+[2/5] 키트 단위 테스트
+OK
+[3/5] 시험 문제 스키마(shop-bot 50개)
+시험 문제 50개 통과, 오류 0건
+[4/5] 시험 문제 스키마(portable 5개 · 22장 capstone 6개)
+시험 문제 5개 통과, 오류 0건
+시험 문제 6개 통과, 오류 0건
+[5/5] 공격 자리표시 ID 등록부
+등록부 46개 · 파일 374개 · ID 참조 470개
+통과: 모든 ATTACK ID가 등록부에 있고 자리표시는 콜론형이며 유형 이름이 등록부와 같습니다
+[종료 코드 0]
+$ if [ -d ../extras/support-bot-python ]; then (cd ../extras/support-bot-python && python -m unittest discover -s tests 2>&1 | tail -3); else echo 'support-bot-python 없음(랩만 있는 저장소) → 건너뜀'; fi
+Ran 6 tests in 3.594s
+
+OK
+[종료 코드 0]
+$ python -I scripts/check-attack-ids.py
+등록부 46개 · 파일 374개 · ID 참조 470개
+통과: 모든 ATTACK ID가 등록부에 있고 자리표시는 콜론형이며 유형 이름이 등록부와 같습니다
+[종료 코드 0]

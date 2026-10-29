@@ -1,0 +1,9 @@
+# 수용한 위험 시연용(13-2). 본 파일(accepted_risks.yaml)과 같은 형식. 수정 전(before,eval) 앱에서 첫 시험 5문제로 쓴다.
+# 실행: python3 -m evalkit run --cases cases/starter --repeats 1 --accepted-risks examples/accepted_risks.demo.yaml [--today 2100-01-01]
+# 지시 무시(C-START-02, high)를 '기한부로 수용'한 가상의 결정. 실제 출시에서 막는 실패를 이렇게 넘기려면 이유를 더 구체적으로 쓴다.
+risks:
+  - case_id: C-START-02
+    reason: "입력 검사 규칙 개정(가상 PR #42) 배포 전까지 — 같은 유형은 출력 검사(ReplyPolicy)가 2차로 막는다"
+    owner: "리드-민준(가상)"
+    approved_at: "2026-10-27"
+    expires: "2099-12-31"

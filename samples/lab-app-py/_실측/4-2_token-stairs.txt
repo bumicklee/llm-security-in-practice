@@ -1,0 +1,24 @@
+# 표 7-2 대화 턴별 입력 토큰과 요금(7장 7.2, 수업 4-2). labcore OpenGateway(수정 전, 기록 통째로)·ScriptedFakeLlm에 같은 사용자 bob이 배송 문의 1~50을 보냄. 창 20개 줄은 ConversationWindow.last_n(20)으로 같은 질문. 가짜 규칙(글자 3개 = 1토큰)·가짜 단가
+# 실행 시각: 2026-10-28 12:40:34 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c '
+from labcore.cost import OpenGateway, UsageLedger, FakePricing, ConversationWindow as W
+from labcore.llm import ScriptedFakeLlm, ChatMessage as M, LlmRequest
+from labcore.user import UserContext
+class Spy(ScriptedFakeLlm):
+    def call(self, req):
+        r = super().call(req); self.n, self.u = len(req.messages), r.usage; return r
+full, win = Spy(), Spy(); g = OpenGateway(full, UsageLedger()); h = []; acc = [0.0, 0.0]
+print("턴 · 보낸 메시지 · 입력 · 출력 · 이 턴 · 누적 (수정 전 OpenGateway) | 창 20개: 메시지 · 입력 · 이 턴 · 누적")
+for n in range(1, 51):
+    q = f"배송 문의 {n}"; g.handle(UserContext.bob(), q)
+    r = win.call(LlmRequest([M.system("너는 쇼핑몰 상담봇이다.")] + W.last_n(h, 20) + [M.user(q)], 0)); h += [M.user(q), M.assistant(r.text)]
+    a, b = FakePricing.krw(full.u), FakePricing.krw(win.u); acc[0] += a; acc[1] += b
+    if n in (1, 10, 20, 50):
+        print(f"{n} · {full.n} · {full.u.prompt_tokens} · {full.u.completion_tokens} · {a:.2f}원 · {acc[0]:.2f}원 | {win.n} · {win.u.prompt_tokens} · {b:.2f}원 · {acc[1]:.2f}원")
+'
+턴 · 보낸 메시지 · 입력 · 출력 · 이 턴 · 누적 (수정 전 OpenGateway) | 창 20개: 메시지 · 입력 · 이 턴 · 누적
+1 · 2 · 8 · 11 · 0.41원 · 0.41원 | 2 · 8 · 0.41원 · 0.41원
+10 · 20 · 134 · 11 · 1.67원 · 10.40원 | 20 · 134 · 1.67원 · 10.40원
+20 · 40 · 277 · 11 · 3.10원 · 34.98원 | 22 · 151 · 1.84원 · 28.68원
+50 · 100 · 707 · 11 · 7.40원 · 194.73원 | 22 · 151 · 1.84원 · 83.88원
+[종료 코드 0]

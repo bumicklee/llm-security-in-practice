@@ -1,0 +1,8 @@
+.venv
+**/__pycache__
+.pytest_cache
+eval-kit/results
+_실측
+.git
+.github
+tests

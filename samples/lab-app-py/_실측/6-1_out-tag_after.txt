@@ -1,0 +1,23 @@
+# 출력 이스케이프 — 수정 후(11장 11.1, 수업 6-1). API는 글자 그대로 돌려주고 화면(app.js)이 textContent로 그린다(flags.outputEscape)
+# 실행 시각: 2026-10-28 09:12:54 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"[ATTACK-OUT-01: 답에 태그 섞기 유도 유형]"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"PRODUCT_QA","orderId":null,"answer":"주문 안내입니다 <mark data-lab-attack=\"ATTACK-OUT-01\">ATTACK-OUT-01</mark>"}
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/flags; echo
+{"secretFreePrompt":true,"inputGuard":true,"outputSchema":true,"ragGuard":true,"tenantFilter":true,"rateLimit":true,"tokenBudget":true,"toolAuthz":true,"ssrfGuard":true,"outputEscape":true,"piiMask":true}
+[종료 코드 0]
+$ grep -n 'textContent\|innerHTML' shopbot/static/app.js
+14:  if (escapeOutput) d.textContent = text;   // [수정 후] 글자로만
+15:  else d.innerHTML = text;                  // [수정 전] 모델 글을 HTML로 해석 → 11장 재현
+22:  document.getElementById('mode').textContent = escapeOutput ? '(수정 후)' : '(수정 전: before 프로필)';
+24:  document.getElementById('tokens').textContent = u.body.tokensToday ?? 0;
+31:      li.textContent = `주문 ${p.orderId} 쿠폰 ${p.amountKrw}원 요청 · 직원 확인 중`;
+35:    li.textContent = `주문 ${p.orderId} 취소 요청 `;
+38:      b.textContent = label;
+49:  const me = document.createElement('div'); me.className = 'me'; me.textContent = m;
+53:  else { const d = document.createElement('div'); d.className = 'err'; d.textContent = `${r.status} ${r.body.answer || r.body.error || ''} (요청 ID ${r.requestId})`; document.getElementById('log').appendChild(d); }
+62:  const a = document.createElement('div'); a.className = 'bot'; a.textContent = r.body.answer || `${r.status}`;
+63:  const c = document.createElement('div'); c.className = 'cite'; c.textContent = '근거: ' + ((r.body.citedIds || []).join(', ') || '없음');
+75:    const b = document.createElement('span'); b.className = 'badge'; b.textContent = '검토 대기';
+78:    d.textContent = `${r.status} ${r.body.status || ''} ${r.body.id || ''}`;
+[종료 코드 0]

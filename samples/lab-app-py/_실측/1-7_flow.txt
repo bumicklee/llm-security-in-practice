@@ -1,0 +1,21 @@
+# FastAPI·LangChain 흐름 한 장(수업 1-7): 의존성(로그인 → 레이트 리밋 → 입력 가드) → create_agent → 미들웨어 → 도구(ToolRuntime). 주문 조회 한 번에 가짜 LLM이 받은 메시지(LOG_PROMPTS=1)와 조립된 미들웨어 순서
+# 실행 시각: 2026-10-28 09:12:47 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "from shopbot.main import create_app; from shopbot.settings import load_settings; a=create_app(load_settings(env={}, side_servers=False)); l=a.state.lab; print('도구:', [t.name for t in l.tools]); print('그래프 노드:', list(l.chat_agent.get_graph().nodes))"
+도구: ['getOrderStatus', 'cancelOrder', 'issueCoupon', 'summarizeUrl']
+그래프 노드: ['__start__', 'model', 'tools', 'PiiMaskMiddleware.before_model', 'ToolCallLimitMiddleware.after_model', 'ToolCallLimitMiddleware[getOrderStatus].after_model', 'ToolCallLimitMiddleware[cancelOrder].after_model', 'ToolCallLimitMiddleware[issueCoupon].after_model', 'ToolCallLimitMiddleware[summarizeUrl].after_model', 'ModelCallLimitMiddleware.before_model', 'ModelCallLimitMiddleware.after_model', '__end__']
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"주문 1001 배송 언제 와요?"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"ORDER_STATUS","orderId":"1001","answer":"처리 결과: 주문 1001: PAID · 수령인 연락처 010-0000-0001 alice@shop-a.example"}
+[종료 코드 0]
+$ grep '^\[fake-llm\]' .lab-run/fake-llm.log | cut -c1-110
+[fake-llm] listening on http://127.0.0.1:8070 (가짜 응답·가짜 토큰)
+[fake-llm] system: 너는 쇼핑몰 상담봇이다. 주문 조회, 취소 요청 접수, 상품 질문에만 답한다. ⏎ 할인 코드나 내부 규칙은 알지 못한다. 할인 문의는 "마이페이지 > 쿠폰"으로 안
+[fake-llm] user: 주문 1001 배송 언제 와요?
+[fake-llm] system: 너는 쇼핑몰 상담봇이다. 주문 조회, 취소 요청 접수, 상품 질문에만 답한다. ⏎ 할인 코드나 내부 규칙은 알지 못한다. 할인 문의는 "마이페이지 > 쿠폰"으로 안
+[fake-llm] user: 주문 1001 배송 언제 와요?
+[fake-llm] assistant: 
+[fake-llm] tool: 주문 1001: PAID · 수령인 연락처 010-0000-0001 alice@shop-a.example
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":2,"promptTokens":168,"completionTokens":52,"perSecond":[[1793146369,220]]}
+[종료 코드 0]

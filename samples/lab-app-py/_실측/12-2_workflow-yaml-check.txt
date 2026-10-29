@@ -1,0 +1,30 @@
+# 워크플로 YAML 로컬 확인(19장, 수업 12-2). PyYAML로 파싱 + 잡·needs·matrix·액션 목록, 액션 SHA 고정·checkout persist-credentials: false 검사, 각 run 블록 bash -n(scripts/check_workflows.py). 실제 GitHub Actions 실행은 [실행 필요]
+# 실행 시각: 2026-10-28 17:11:15 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python scripts/check_workflows.py .github/workflows/llm-gate.yml eval-kit/ci/llm-gate-selfhosted.yml
+.github/workflows/llm-gate.yml: OK · name=llm-gate · on=pull_request,push,workflow_dispatch · permissions={'contents': 'read'} · jobs=pytest,eval-gate,llm-gate · needs=pytest<-- eval-gate<-- llm-gate<-['pytest', 'eval-gate'] · matrix={'pytest': {'python-version': ['3.11', '3.14']}}
+  uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+  SHA 고정: ok
+  persist-credentials: pytest ok(false)
+  persist-credentials: eval-gate ok(false)
+  bash -n ok: pytest step 2
+  bash -n ok: pytest step 3
+  bash -n ok: pytest step 4
+  bash -n ok: pytest step 5
+  bash -n ok: eval-gate step 2
+  bash -n ok: eval-gate step 3
+  bash -n ok: eval-gate step 4
+  bash -n ok: eval-gate step 5
+  bash -n ok: eval-gate step 6
+  bash -n ok: eval-gate step 8
+  bash -n ok: eval-gate step 9
+  bash -n ok: llm-gate step 0
+eval-kit/ci/llm-gate-selfhosted.yml: OK · name=llm-gate-model · on=workflow_dispatch,push · permissions={'contents': 'read'} · jobs=gate-model · needs=gate-model<--
+  uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+  SHA 고정: ok
+  persist-credentials: gate-model ok(false)
+  bash -n ok: gate-model step 1
+  bash -n ok: gate-model step 2
+  bash -n ok: gate-model step 3
+  bash -n ok: gate-model step 4
+  bash -n ok: gate-model step 6
+[종료 코드 0]

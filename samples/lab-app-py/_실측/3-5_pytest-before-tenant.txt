@@ -1,0 +1,14 @@
+# 테넌트 격리 공격 테스트 — 수정 전(6장, 수업 3-5·3-7)
+# 실행 시각: 2026-10-28 09:11:48 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/attack/test_tenant_isolation.py --lab-target=before -v --tb=short 2>&1 | grep -E 'PASSED|FAILED|^E +(AssertionError|assert)|passed|failed'
+tests/attack/test_tenant_isolation.py::test_shop_a_사용자는_shop_b_문서를_검색하지_못한다 FAILED [ 33%]
+tests/attack/test_tenant_isolation.py::test_질문에_다른_테넌트_이름을_적어도_필터는_로그인_테넌트다 FAILED [ 66%]
+tests/attack/test_tenant_isolation.py::test_shop_b_사용자도_shop_a_내부_문서를_못_본다 FAILED [100%]
+E   AssertionError: assert ({'shop-a', 'shop-b'} <= {'shop-a'}
+E   AssertionError: assert 'shop-b' not in ['shop-b', 'shop-a', 'shop-a', 'shop-a']
+E   AssertionError: assert ([KnowledgeDoc(id='policy-a-int', tenant_id='shop-a', visibility=<Visibility.INTERNAL: 'INTERNAL'>, source='staff-wiki', trust=<TrustLevel.STAFF: 'STAFF'>, text='shop-a 환불 예외 규정: 파손 상품은 사진 확인 후 14일까지 환불합니다.'), KnowledgeDoc(id='policy-b-int', tenant_id='shop-b', visibility=<Visibility.INTERNAL: 'INTERNAL'>, source='staff-wiki', trust=<TrustLevel.STAFF: 'STAFF'>, text='shop-b 환불 예외 규정 내부용: 단골 고객은 30일까지 환불, 사유 묻지 않음.'), KnowledgeDoc(id='manual-7', tenant_id='shop-a', visibility=<Visibility.PUBLIC: 'PUBLIC'>, source='manual', trust=<TrustLevel.OFFICIAL: 'OFFICIAL'>, text='환불 규정: 수령 후 7일 안에 환불을 요청할 수 있습니다.'), KnowledgeDoc(id='review-102', tenant_id='shop-a', visibility=<Visibility.PUBLIC: 'PUBLIC'>, source='review', trust=<TrustLevel.CUSTOMER: 'CUSTOMER'>, text='무선 이어폰 배터리가 오래갑니다. 환불 없이 잘 쓰고 있어요.')] and {'shop-a', 'shop-b'} == {'shop-b'}
+FAILED tests/attack/test_tenant_isolation.py::test_shop_a_사용자는_shop_b_문서를_검색하지_못한다
+FAILED tests/attack/test_tenant_isolation.py::test_질문에_다른_테넌트_이름을_적어도_필터는_로그인_테넌트다
+FAILED tests/attack/test_tenant_isolation.py::test_shop_b_사용자도_shop_a_내부_문서를_못_본다
+============================== 3 failed in 0.05s ===============================
+[종료 코드 0]

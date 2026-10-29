@@ -1,0 +1,27 @@
+# promptfoo 설정으로 옮기기(18장, 수업 11-5). 채점 모델 주소가 127.0.0.1이 아니면 거부. promptfoo 실제 실행은 【작성자 실측】
+# 실행 시각: 2026-10-28 09:12:14 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -m evalkit to-promptfoo --out promptfoo/promptfooconfig.generated.yaml
+promptfoo 설정: promptfoo/promptfooconfig.generated.yaml (시험 28개, 도구 기록 등 옮기지 못한 판정 35건)
+[종료 코드 0]
+$ head -5 promptfoo/promptfooconfig.generated.yaml
+# 자동 생성: python3 -m evalkit to-promptfoo  (promptfoo 0.125.1 기준, Node.js 22.22.0 이상)
+# 실행 예: npx promptfoo@0.125.1 eval -c promptfoo/promptfooconfig.generated.yaml   (최신은 @latest, 녹화 직전 다시 고정)
+# 채점 모델: defaultTest.options.provider(로컬 http://127.0.0.1:1234/v1). 지정하지 않으면 promptfoo가 외부 API 기본 채점 모델로 보낸다(F1)
+# llm-rubric: 기준표의 판정 기준만 옮겼다. hold(보류)는 promptfoo에 대응 값이 없어 옮기지 못함(F2)
+# 옮기지 못한 판정·시험(도구 기록, 다른 API, 시험용 문서, 서버 메모리 여러 턴, hold) — evalkit에서만 판정:
+[종료 코드 0]
+$ sed -n '/^defaultTest/,/^tests/p' promptfoo/promptfooconfig.generated.yaml
+defaultTest:
+  options:
+    provider:
+      id: "openai:chat:local-judge-model"
+      config:
+        apiBaseUrl: "http://127.0.0.1:1234/v1"
+        apiKey: "sk-test-FAKE-0000"
+        temperature: 0
+tests:
+[종료 코드 0]
+$ JUDGE_BASE_URL=http://203.0.113.9:1234/v1 python -m evalkit to-promptfoo --out promptfoo/x.yaml; echo "exit=$?"
+설정 오류: JUDGE_BASE_URL http://203.0.113.9:1234/v1 는 127.0.0.1이 아닙니다. 채점 모델도 내 PC의 로컬 모델만 씁니다
+exit=2
+[종료 코드 0]

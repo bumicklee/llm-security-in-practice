@@ -1,0 +1,18 @@
+# ToolArgValidator·ToolAllowlist에 test_tools_unit.py의 무해한 시험 값을 하나씩 넣어 보기(9장 9.5, 수업 5-4)
+# 실행 시각: 2026-10-28 20:04:51 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "
+from labcore.tools import ToolArgValidator as V, ToolAllowlist
+for v in ('1001', '1001 abc', None): print('주문 번호', repr(v), '→', V.valid_order_id(v))
+for q in (-1, 3): print('수량', q, '→', V.valid_quantity(q))
+for c in ('FALL-10', 'x y!'): print('쿠폰 코드', repr(c), '→', V.valid_coupon(c))
+a = ToolAllowlist.lab()
+print('허용 목록에 deleteAllOrders →', a.allowed('deleteAllOrders'), '· cancelOrder 등급 →', a.risk_of('cancelOrder').name)"
+주문 번호 '1001' → True
+주문 번호 '1001 abc' → False
+주문 번호 None → False
+수량 -1 → False
+수량 3 → True
+쿠폰 코드 'FALL-10' → True
+쿠폰 코드 'x y!' → False
+허용 목록에 deleteAllOrders → False · cancelOrder 등급 → MONEY
+[종료 코드 0]

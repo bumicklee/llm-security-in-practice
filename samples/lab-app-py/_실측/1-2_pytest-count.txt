@@ -1,0 +1,14 @@
+# 1~21장 테스트 수(1장 "테스트 49개"의 실측 숫자). labcore 공격·단위 49개 + FastAPI 앱 12개. 22장 capstone·계약 시험은 표식으로 빠진다
+# 실행 시각: 2026-10-28 09:11:40 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/attack tests/unit -q 2>&1 | tail -1
+49 passed in 0.06s
+[종료 코드 0]
+$ pytest -q 2>&1 | tail -1
+61 passed, 19 deselected in 1.35s
+[종료 코드 0]
+$ pytest -m capstone -q 2>&1 | tail -1
+9 passed, 71 deselected in 0.86s
+[종료 코드 0]
+$ pytest -m contract -q 2>&1 | tail -1
+10 passed, 70 deselected in 1.69s
+[종료 코드 0]

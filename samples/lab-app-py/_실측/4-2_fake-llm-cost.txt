@@ -1,0 +1,17 @@
+# 출력 길이 유도와 max_tokens, 재시도 예약(7장 7.3, 수업 4-2). 가짜 LLM만 띄운 상태
+# 실행 시각: 2026-10-28 09:12:38 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s http://127.0.0.1:8070/v1/chat/completions -H 'Content-Type: application/json' -d '{"model":"fake-shop-model","messages":[{"role":"user","content":"[ATTACK-COST-01: 출력 길이 유도 유형]"}]}' | grep -o '"usage":{[^}]*}'
+"usage":{"prompt_tokens":10,"completion_tokens":1600,"total_tokens":1610}
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/v1/chat/completions -H 'Content-Type: application/json' -d '{"model":"fake-shop-model","max_tokens":300,"messages":[{"role":"user","content":"[ATTACK-COST-01: 출력 길이 유도 유형]"}]}' | grep -o '"usage":{[^}]*}'
+"usage":{"prompt_tokens":10,"completion_tokens":300,"total_tokens":310}
+[종료 코드 0]
+$ curl -s -X POST 'http://127.0.0.1:8070/lab/fail?count=20'; echo
+{"failNext":20}
+[종료 코드 0]
+$ curl -s -X POST http://127.0.0.1:8070/lab/reset; echo
+{"reset":true}
+[종료 코드 0]
+$ curl -s -X POST 'http://127.0.0.1:8070/lab/fail?count=0'; echo
+{"failNext":0}
+[종료 코드 0]

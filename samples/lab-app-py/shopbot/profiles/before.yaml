@@ -1,0 +1,20 @@
+# 수정 전 동작(3·5·7·9·10·11장 재현). 실행: LAB_PROFILES=before
+# 주의: 127.0.0.1 랩에서만. 가짜 비밀만 샌다.
+max_retries: null        # openai SDK 기본값(2 = 시도 3번)으로 되돌림(7장 7.3)
+max_tokens: 4000         # 출력 길이 제한을 사실상 풂
+tool_calls_total: 150
+tool_calls_per_tool: 40
+model_calls_per_run: 300
+memory_max_messages: 1000   # 대화 기록을 사실상 무제한으로(7장 7.2 계단 재현)
+defense:
+  secret_free_prompt: false
+  input_guard: false
+  output_schema: false
+  rag_guard: false
+  tenant_filter: false
+  rate_limit: false
+  token_budget: false
+  tool_authz: false
+  ssrf_guard: false
+  output_escape: false
+  pii_mask: false

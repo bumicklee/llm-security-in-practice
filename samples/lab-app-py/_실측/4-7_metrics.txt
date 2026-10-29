@@ -1,0 +1,19 @@
+# 비용 메트릭(8장 8.5, 수업 4-7). 관리 앱 127.0.0.1:8082 /metrics는 로그인 필요: 인증 없으면 401. 카운터 lab_llm_tokens_total{user,kind}·lab_llm_cost_krw_total. 바로 앞 4-3 실행 뒤
+# 실행 시각: 2026-10-28 09:13:00 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -o /dev/null -w 'HTTP %{http_code} (인증 없음)\n' http://127.0.0.1:8082/metrics
+HTTP 401 (인증 없음)
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 http://127.0.0.1:8082/metrics | grep -E '^lab_llm' 
+lab_llm_tokens_total{kind="input",user="bob"} 2090.0
+lab_llm_tokens_total{kind="output",user="bob"} 280.0
+lab_llm_tokens_total{kind="input",user="alice"} 70.0
+lab_llm_tokens_total{kind="output",user="alice"} 28.0
+lab_llm_tokens_created{kind="input",user="bob"} 1.7931463796321e+09
+lab_llm_tokens_created{kind="output",user="bob"} 1.793146379632113e+09
+lab_llm_tokens_created{kind="input",user="alice"} 1.7931463803647308e+09
+lab_llm_tokens_created{kind="output",user="alice"} 1.793146380364736e+09
+lab_llm_cost_krw_total{user="bob"} 29.299999999999997
+lab_llm_cost_krw_total{user="alice"} 1.54
+lab_llm_cost_krw_created{user="bob"} 1.7931463796321201e+09
+lab_llm_cost_krw_created{user="alice"} 1.7931463803647392e+09
+[종료 코드 0]

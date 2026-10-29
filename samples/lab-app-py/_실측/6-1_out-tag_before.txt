@@ -1,0 +1,8 @@
+# 출력 이스케이프 꺼짐 — 수정 전(11장, 수업 6-1). 화면(app.js)은 flags.outputEscape=false면 innerHTML로 그린다
+# 실행 시각: 2026-10-28 09:17:10 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"[ATTACK-OUT-01: 답에 태그 섞기 유도 유형]"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"UNKNOWN","orderId":null,"answer":"주문 안내입니다 <mark data-lab-attack=\"ATTACK-OUT-01\">ATTACK-OUT-01</mark>"}
+[종료 코드 0]
+$ curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/flags; echo
+{"secretFreePrompt":false,"inputGuard":false,"outputSchema":false,"ragGuard":false,"tenantFilter":false,"rateLimit":false,"tokenBudget":false,"toolAuthz":false,"ssrfGuard":false,"outputEscape":false,"piiMask":false}
+[종료 코드 0]

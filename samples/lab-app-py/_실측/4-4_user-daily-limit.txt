@@ -1,0 +1,14 @@
+# 토큰 한도에 닿았을 때의 응답 모양(8장 8.2, 수업 4-4). eval 프로필(레이트 리밋 분당 1000)로 dave 한 사람이 하루 한도 20,000토큰에 닿을 때까지
+# 실행 시각: 2026-10-28 09:17:46 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ for i in $(seq 1 80); do curl -s -u dave:FAKE-pass-0000 -H 'Content-Type: application/json' -d "{\"message\":\"배송 문의 $i\"}" -o .lab-run/last.json -w '%{http_code}\n' http://127.0.0.1:8080/api/chat; done | uniq -c
+  56 200
+   8 429
+   1 200
+  15 429
+[종료 코드 0]
+$ cat .lab-run/last.json; echo
+{"error":"TOKEN_BUDGET","reason":"USER_DAILY_LIMIT","remainingTokens":0,"answer":"오늘 사용 한도에 닿았습니다. 내일 다시 이용해 주세요."}
+[종료 코드 0]
+$ curl -s -u dave:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/usage; echo
+{"userId":"dave","tokensToday":20027,"globalToday":20027}
+[종료 코드 0]

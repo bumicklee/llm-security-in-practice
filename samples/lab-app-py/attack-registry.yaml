@@ -1,0 +1,68 @@
+# 공격 유형 등록부 — 공격 자리표시 ID의 유일한 원본(부록 A, 설계 2.5·5.6, W5)
+# 형식: 문서·대본·테스트·시험 문제·가짜 LLM은 [ATTACK-<범주>-<NN>: 유형 이름] 콜론형만 쓴다.
+#   예: [ATTACK-INJ-01: 시스템 지시 무시 요청 유형]
+#   여러 턴 시험의 앞 턴은 같은 ID 뒤에 -T1, -T2를 붙인다(예: ATTACK-MT-01-T1). 등록부에는 본 ID만 둔다.
+# 이 파일에는 유형 이름만 둔다. 실제 공격 문구는 어디에도 싣지 않는다(작성자 비공개 세트는 저장소 밖).
+# 검사: python3 -I scripts/check-attack-ids.py   (등록부에 없는 ID·콜론 없는 자리표시가 있으면 exit 1)
+version: 1
+updated: "2026-10-27"
+categories:
+  INJ:    "직접 인젝션·입력 경계"
+  LEAK:   "지시문·비밀 공개 요청"
+  PII:    "다른 사용자 정보 요청"
+  RAG:    "문서 속 지시(간접 인젝션)"
+  TENANT: "다른 테넌트 문서 요청"
+  TOOL:   "금지 도구 실행 유도"
+  AUTHZ:  "남의 리소스로 도구 호출"
+  MT:     "여러 턴"
+  COST:   "요금(출력 길이·호출 폭주)"
+  SSRF:   "밖을 부르는 도구로 내부 주소 접근"
+  MCP:    "MCP 도구 공급망"
+  OUT:    "출력 처리(답 속 태그)"
+attacks:
+  ATTACK-INJ-01:   {type: "시스템 지시 무시 요청 유형", chapter: "3·4장"}
+  ATTACK-INJ-02:   {type: "역할 바꾸기 유형", chapter: "3·4장"}
+  ATTACK-INJ-03:   {type: "지시문 요약·번역 요청 유형", chapter: "3장"}
+  ATTACK-INJ-04:   {type: "형식 바꾸기(코드 블록·표) 유형", chapter: "3장"}
+  ATTACK-INJ-05:   {type: "단계적 우회 요청 유형", chapter: "3장"}
+  ATTACK-INJ-06:   {type: "역할 표시 흉내 유형", chapter: "4장"}
+  ATTACK-INJ-07:   {type: "아주 긴 입력 유형", chapter: "4장"}
+  ATTACK-INJ-08:   {type: "가정 상황으로 돌려 규칙 밖 보상을 묻는 유형", chapter: "14장"}
+  ATTACK-INJ-09:   {type: "직원·관리자라고 주장하는 유형", chapter: "14장"}
+  ATTACK-INJ-10:   {type: "상담 범위 밖 작업을 시키는 유형", chapter: "14장"}
+  ATTACK-INJ-11:   {type: "규칙이 바뀌었다고 알리는 유형", chapter: "14장"}
+  ATTACK-LEAK-01:  {type: "받은 지시를 그대로 보여 달라는 유형", chapter: "14장"}
+  ATTACK-LEAK-02:  {type: "지시를 요약해 달라는 유형", chapter: "14장"}
+  ATTACK-LEAK-03:  {type: "지시의 일부 내용을 묻는 유형", chapter: "14장"}
+  ATTACK-LEAK-04:  {type: "내부 할인 정책을 묻는 유형", chapter: "14장"}
+  ATTACK-LEAK-05:  {type: "설정 확인을 요청하는 유형", chapter: "14장"}
+  ATTACK-LEAK-06:  {type: "지시가 있는지와 그 목적을 묻는 유형", chapter: "14장"}
+  ATTACK-PII-01:   {type: "다른 고객의 주문 정보를 묻는 유형", chapter: "14장"}
+  ATTACK-PII-02:   {type: "가족이라며 다른 고객 정보를 묻는 유형", chapter: "14장"}
+  ATTACK-PII-03:   {type: "배송 기사라며 주소를 묻는 유형", chapter: "14장"}
+  ATTACK-PII-04:   {type: "다른 고객 연락처를 묻는 유형", chapter: "14장"}
+  ATTACK-RAG-01:   {type: "리뷰 속 숨은 지시 유형", chapter: "5장"}
+  ATTACK-RAG-02:   {type: "문서 속 외부 링크 안내 지시 유형", chapter: "5·15장"}
+  ATTACK-RAG-03:   {type: "문서 속 안내 문구 변경 지시 유형", chapter: "15장"}
+  ATTACK-RAG-04:   {type: "후기 속 상담 규칙 변경 지시 유형", chapter: "15장"}
+  ATTACK-RAG-05:   {type: "후기 속 도구 호출(주문 취소) 지시 유형", chapter: "15장"}
+  ATTACK-RAG-06:   {type: "메일 속 다른 주문 취소 지시 유형", chapter: "15장"}
+  ATTACK-RAG-07:   {type: "메일 속 개인정보 노출 지시 유형", chapter: "15장"}
+  ATTACK-TENANT-01: {type: "다른 테넌트 문서 요청 유형", chapter: "6·15장"}
+  ATTACK-TENANT-02: {type: "다른 테넌트 내부 규정 인용 요청 유형", chapter: "15장"}
+  ATTACK-TENANT-03: {type: "테넌트 이름을 바꿔 말하는 유형", chapter: "15장"}
+  ATTACK-TOOL-01:  {type: "확인 절차를 건너뛰라는 유형", chapter: "15장"}
+  ATTACK-TOOL-02:  {type: "여러 주문을 한 번에 취소하라는 유형", chapter: "15장"}
+  ATTACK-TOOL-03:  {type: "도구를 바로 실행하라고 요청하는 유형", chapter: "15장"}
+  ATTACK-TOOL-04:  {type: "확인 없이 주문 취소를 시키는 유형", chapter: "13·15장"}
+  ATTACK-AUTHZ-01: {type: "남의 주문 번호로 변경 도구 호출 유형", chapter: "9장"}
+  ATTACK-AUTHZ-02: {type: "다른 고객이라고 주장하며 취소를 요청하는 유형", chapter: "15장"}
+  ATTACK-AUTHZ-03: {type: "관리자 권한을 주장하며 남의 주문을 바꾸는 유형", chapter: "15장"}
+  ATTACK-AUTHZ-04: {type: "주문 번호를 바꿔 가며 조회하는 유형", chapter: "15장"}
+  ATTACK-MT-01:    {type: "마지막 턴에서 지시 공개를 요청하는 유형", chapter: "15장"}
+  ATTACK-MT-02:    {type: "설정한 상황 안에서 보상을 요구하는 유형", chapter: "15장"}
+  ATTACK-MT-03:    {type: "확인 없이 진행하라고 압박하는 유형", chapter: "15장"}
+  ATTACK-COST-01:  {type: "출력 길이 유도 유형", chapter: "7장"}
+  ATTACK-SSRF-01:  {type: "내부 주소 요약 요청 유형", chapter: "10장"}
+  ATTACK-MCP-01:   {type: "도구 설명 속 숨은 지시 유형", chapter: "10장"}
+  ATTACK-OUT-01:   {type: "답에 태그 섞기 유도 유형", chapter: "11장"}

@@ -1,0 +1,187 @@
+# 자동 생성: samples/lab-app-py/.github/workflows/llm-gate.yml을 저장소 맨 위에서 돌도록 바꾼 사본(_tools/make_root_workflow.py).
+#   바뀐 것: run 단계 작업 폴더 = samples/lab-app-py, 아티팩트 경로 앞에 samples/lab-app-py/. 수정은 원본에서 한다.
+# 목적: PR마다 "앱 안 증거(pytest)"와 "앱 밖 시험(평가 키트 게이트)"을 돌리고, 하나라도 빨강이면 머지를 막는다(19장, 수업 12-2·12-4).
+#   잡 1 pytest    : Python 3.11·3.14 두 버전. labcore 공격·단위 테스트 + FastAPI 앱 테스트(가짜 채팅 모델) → 22장 capstone → 계약
+#   잡 2 eval-gate : tools/fake_llm.py(127.0.0.1:8070) → uvicorn(LAB_PROFILES=eval, 127.0.0.1:8080) → python -m evalkit run --gate
+#                    PR = quick 묶음, main push·수동 실행 = full 묶음. 기준선 = main의 마지막 성공 full 산출물(download-artifact + run-id)
+#   잡 3 llm-gate  : 두 잡의 결과를 모아 하나라도 성공이 아니면 빨강(요약 표를 실행 요약에 붙인다)
+# 두 잡은 서로 기다리지 않는다(needs 없음). pytest가 빨개져도 eval-gate는 끝까지 돈다 → "프롬프트·설정을 고친 PR"은
+#   pytest가 잡든 못 잡든 평가 게이트의 판정(quick 7건 등)이 PR 화면에 함께 남는다(2차 교차 검증 B F-01, _실측/12-4_pr-simulation.txt).
+#   대신 방어 코드를 지운 PR도 eval-gate가 돈다(러너 몇 분). 비용보다 "두 층이 각자 본 것"을 다 보이는 쪽을 골랐다.
+# 비밀 값은 쓰지 않는다(가짜 LLM이라 키가 필요 없다). 실제 모델은 eval-kit/ci/llm-gate-selfhosted.yml(선택)
+# 머지 막기: 저장소 Settings > Rules(Rulesets)에서 llm-gate 잡 하나(또는 세 잡 모두)를 "필수 상태 검사"로 지정.
+# 공급망(LLM03): 액션은 커밋 SHA로 고정하고 뒤 주석에 태그를 적는다(태그는 옮겨질 수 있다). 갱신은 Dependabot(github-actions)으로.
+#   2026-10-28 확인값 — checkout v7.0.1, setup-python v7.1.0, upload-artifact v7.0.2, download-artifact v8.0.2(GitHub API refs/tags).
+#   checkout은 persist-credentials: false — 이 워크플로는 저장소에 쓰지 않으므로 토큰을 git 자격 증명으로 남기지 않는다
+#   (checkout v6부터는 .git/config가 아니라 $RUNNER_TEMP 아래 별도 파일에 둔다. 이 설정이면 그 파일도 만들지 않는다).
+#   GH_TOKEN은 그것을 쓰는 단계(기준선 찾기)의 env에만 둔다. 잡 전체에 두면 시험 대상 앱·가짜 LLM·evalkit도 토큰을 읽는다.
+# 실제 Actions 실행은 [실행 필요]. 로컬에서는 YAML 파싱·run 블록 bash -n·SHA 고정 검사(_실측/12-2_workflow-yaml-check.txt)와
+#   두 잡의 명령을 그대로 흉내 낸 PR 시뮬레이션(_실측/12-4_pr-simulation.txt)만 했다.
+name: llm-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "quick(빠른 묶음) 또는 full(전체 묶음)"
+        type: choice
+        options: [quick, full]
+        default: full
+
+permissions:
+  contents: read         # 잡마다 필요한 것만 더한다(eval-gate만 actions: read)
+
+defaults:
+  run:
+    working-directory: samples/lab-app-py
+
+concurrency:
+  group: llm-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.14"]
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: 의존성 설치(잠금 파일, 해시 검사)
+        run: python -m pip install --require-hashes -r requirements.lock
+      - name: 방어 코드·앱 공격 테스트(labcore + FastAPI, 가짜 LLM·가짜 채팅 모델)
+        run: python -m pytest tests/attack tests/unit tests/app -v
+      - name: 22장 종합 실습(capstone)
+        run: python -m pytest -m capstone -v
+      - name: 계약·가짜 LLM 대조(contract)
+        run: python -m pytest -m contract -v
+
+  eval-gate:
+    # needs: pytest 를 두지 않는다(위 머리 주석). pytest와 동시에 시작한다
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read        # 기준선 산출물(main의 full 실행) 내려받기
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"   # GH_TOKEN은 여기 두지 않는다(기준선 찾기 단계에만)
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: 의존성 설치(잠금 파일, 해시 검사)
+        run: python -m pip install --require-hashes -r requirements.lock
+
+      - name: 묶음 고르기(PR = quick, main·수동 = full)
+        id: suite
+        run: |
+          SUITE="${{ github.event.inputs.suite }}"
+          if [ -z "$SUITE" ]; then
+            if [ "${{ github.event_name }}" = "pull_request" ]; then SUITE=quick; else SUITE=full; fi
+          fi
+          echo "suite=$SUITE" >> "$GITHUB_OUTPUT"
+          echo "묶음: $SUITE"
+
+      - name: 키트 점검(단위 테스트·스키마·공격 ID 등록부)
+        run: |
+          (cd eval-kit && python -m unittest discover -s tests)
+          (cd eval-kit && python -m evalkit validate cases)
+          python -I scripts/check-attack-ids.py .
+
+      - name: 가짜 LLM과 shop-bot-py(eval 프로필) 띄우기 — 127.0.0.1만
+        run: |
+          nohup python -I tools/fake_llm.py > fake-llm.log 2>&1 &
+          LAB_PROFILES=eval nohup python -m uvicorn shopbot.main:app --host 127.0.0.1 --port 8080 > shop-bot.log 2>&1 &
+          for _ in $(seq 1 60); do
+            curl -sf http://127.0.0.1:8082/healthz && exit 0
+            sleep 1
+          done
+          echo "shop-bot-py가 뜨지 않았습니다"; tail -50 shop-bot.log; exit 1
+
+      - name: 기준선 찾기(main의 마지막 성공 full 실행)
+        id: base
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}   # gh run list에만 필요. 이 단계 밖에서는 보이지 않는다
+        run: |
+          RUN_ID=$(gh run list --repo "${{ github.repository }}" --workflow llm-gate.yml --branch main --status success \
+                   --limit 1 --json databaseId --jq '.[0].databaseId' || true)
+          echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
+          echo "기준선 실행: ${RUN_ID:-없음}"
+
+      - name: 기준선 내려받기
+        if: steps.base.outputs.run_id != ''
+        continue-on-error: true      # 첫 실행·보관 기간 지남이면 비교 없이 진행
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: llm-gate-full
+          path: samples/lab-app-py/baseline
+          run-id: ${{ steps.base.outputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: 출시 게이트 실행
+        run: |
+          cd eval-kit
+          COMPARE=""
+          if [ -f ../baseline/results.json ]; then COMPARE="--compare ../baseline/results.json"; fi
+          python -m evalkit run --target targets/shop-bot-py.yaml --suite "${{ steps.suite.outputs.suite }}" --gate --out results $COMPARE
+
+      - name: 보고서를 실행 요약에 붙이기
+        if: always()
+        run: |
+          if [ -f eval-kit/results/latest/report.md ]; then
+            cat eval-kit/results/latest/report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: 보고서 올리기
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: llm-gate-${{ steps.suite.outputs.suite }}
+          path: |
+            samples/lab-app-py/eval-kit/results/latest/report.html
+            samples/lab-app-py/eval-kit/results/latest/report.md
+            samples/lab-app-py/eval-kit/results/latest/results.json
+          retention-days: 30
+          if-no-files-found: ignore
+
+  llm-gate:
+    # 필수 상태 검사로 지정할 잡. 두 잡이 모두 success일 때만 초록. 하나라도 failure·cancelled·skipped면 빨강
+    needs: [pytest, eval-gate]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: 두 층 결과 모으기
+        env:
+          PYTEST_RESULT: ${{ needs.pytest.result }}
+          EVAL_RESULT: ${{ needs.eval-gate.result }}
+        run: |
+          {
+            echo "| 층 | 잡 | 결과 |"
+            echo "| --- | --- | --- |"
+            echo "| 앱 안 증거 | pytest | $PYTEST_RESULT |"
+            echo "| 앱 밖 시험 | eval-gate | $EVAL_RESULT |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "pytest=$PYTEST_RESULT eval-gate=$EVAL_RESULT"
+          if [ "$PYTEST_RESULT" = success ] && [ "$EVAL_RESULT" = success ]; then
+            echo "llm-gate: GREEN — 두 층 모두 통과"
+          else
+            echo "llm-gate: RED — 머지 불가(빨간 층의 로그를 본다)"; exit 1
+          fi

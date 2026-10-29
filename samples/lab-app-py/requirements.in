@@ -1,0 +1,19 @@
+# 직접 의존성(2026-10-28 PyPI 조회 고정값). 잠금: requirements.lock
+fastapi==0.162.0
+starlette==1.10.0
+pydantic==2.14.1
+pydantic-settings==2.16.1
+uvicorn==0.54.0
+httpx2==2.16.0
+openai==3.40.0
+langchain==1.4.7
+langchain-core==1.7.0
+langchain-openai==1.7.3
+langgraph==1.2.18
+mcp==2.3.0
+limits==5.8.0
+redis==8.1.0
+prometheus-client==0.26.0
+pyyaml==6.0.3
+pytest==9.1.1
+anyio==4.15.1

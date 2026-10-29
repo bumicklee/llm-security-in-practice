@@ -1,0 +1,22 @@
+# 정상 채팅 요청(2-6 출력 스키마 {intent, orderId, answer}). 수정 후(기본 프로필, 호스트 uvicorn)
+# 실행 시각: 2026-10-28 09:12:51 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -i -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"주문 1001 배송 언제 와요?"}' http://127.0.0.1:8080/api/chat; echo
+HTTP/1.1 200 OK
+date: Wed, 28 Oct 2026 00:12:51 GMT
+server: uvicorn
+content-length: 144
+content-type: application/json
+x-ratelimit-remaining: 9
+x-request-id: req-e50f79a9
+
+{"intent":"ORDER_STATUS","orderId":"1001","answer":"처리 결과: 주문 1001: PAID · 수령인 연락처 010-0000-0001 alice@shop-a.example"}
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"환불은 며칠 안에 신청해야 하나요?"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"PRODUCT_QA","orderId":null,"answer":"문의 감사합니다. 주문 번호를 알려 주시면 확인해 드릴게요."}
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"[ATTACK-INJ-01: 시스템 지시 무시 요청 유형]"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"UNKNOWN","orderId":null,"answer":"도와드릴 수 없는 요청입니다"}
+[종료 코드 0]
+$ curl -s -o /dev/null -w '%{http_code}\n' -H 'Content-Type: application/json' -d '{"message":"안녕하세요"}' http://127.0.0.1:8080/api/chat
+401
+[종료 코드 0]

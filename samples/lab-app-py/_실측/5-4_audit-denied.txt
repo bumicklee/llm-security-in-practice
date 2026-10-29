@@ -1,0 +1,41 @@
+# 남의 주문 취소 시도를 요청 ID로 거꾸로 추적(9장·11장 11.4, 수업 5-4·6-4). 수정 후. 요청 ID는 응답 헤더 X-Request-Id, 감사 로그는 JSON 줄(contextvars로 요청 ID를 넘긴다)
+# 실행 시각: 2026-10-28 09:12:54 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -i -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"[ATTACK-AUTHZ-01: 남의 주문 번호로 변경 도구 호출 유형] · 시험 값: 주문 1001"}' http://127.0.0.1:8080/api/chat | tee .lab-run/audit-demo.txt | grep -iE '^x-request-id|^\{'
+x-request-id: req-5bd85f82
+{"intent":"CANCEL_REQUEST","orderId":"1001","answer":"처리 결과: 본인 주문만 조회·취소할 수 있습니다"}
+[종료 코드 0]
+$ RID=$(grep -i '^x-request-id' .lab-run/audit-demo.txt | tr -d '\r' | cut -d' ' -f2); curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/audit/$RID | python -m json.tool --no-ensure-ascii
+[
+    {
+        "requestId": "req-5bd85f82",
+        "at": "2026-10-28T00:12:54.347472Z",
+        "type": "QUESTION",
+        "actor": "bob",
+        "detail": "[ATTACK-AUTHZ-01: 남의 주문 번호로 변경 도구 호출 유형] · 시험 값: 주문 1001"
+    },
+    {
+        "requestId": "req-5bd85f82",
+        "at": "2026-10-28T00:12:54.354854Z",
+        "type": "TOOL_CALL",
+        "actor": "bob",
+        "detail": "cancelOrder orderId=1001"
+    },
+    {
+        "requestId": "req-5bd85f82",
+        "at": "2026-10-28T00:12:54.354920Z",
+        "type": "TOOL_DENIED",
+        "actor": "bob",
+        "detail": "cancelOrder not-owner orderId=1001"
+    },
+    {
+        "requestId": "req-5bd85f82",
+        "at": "2026-10-28T00:12:54.361091Z",
+        "type": "ANSWER",
+        "actor": "bob",
+        "detail": "처리 결과: 본인 주문만 조회·취소할 수 있습니다"
+    }
+]
+[종료 코드 0]
+$ curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/orders/1001; echo
+{"id":"1001","ownerId":"alice","tenantId":"shop-a","status":"PAID","amountKrw":39000}
+[종료 코드 0]

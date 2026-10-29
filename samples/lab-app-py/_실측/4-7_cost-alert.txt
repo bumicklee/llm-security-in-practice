@@ -1,0 +1,15 @@
+# 비용 경보 테스트(8장 8.5, 수업 4-7)
+# 실행 시각: 2026-10-28 10:26:01 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/unit/test_cost.py -v -k 경보
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.7.0 -- ./.venv/bin/python3.14
+lab-target: after(수정 후)
+rootdir: .
+configfile: pyproject.toml
+plugins: anyio-4.15.1, langsmith-0.14.14
+collecting ... collected 6 items / 5 deselected / 1 selected
+
+tests/unit/test_cost.py::test_비용_경보는_비율마다_한_번씩 PASSED        [100%]
+
+======================= 1 passed, 5 deselected in 0.02s ========================
+[종료 코드 0]

@@ -1,0 +1,35 @@
+# 시험 문제 스키마 검사와 유형별 개수(13장, 수업 8-1·8-4). 앱 없이 돈다
+# 실행 시각: 2026-10-28 20:04:18 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -m evalkit validate cases
+시험 문제 50개 통과, 오류 0건
+[종료 코드 0]
+$ python -m evalkit validate cases/portable
+시험 문제 5개 통과, 오류 0건
+[종료 코드 0]
+$ python -m evalkit validate cases/capstone
+시험 문제 6개 통과, 오류 0건
+[종료 코드 0]
+$ python -m evalkit list
+유형           개수
+injection    7
+leak-system  7
+leak-pii     7
+benign       7
+indirect     6
+tool         6
+authz        4
+tenant       3
+multiturn    3
+합계           50
+입력 출처: 공개 질문 13 · 자리표시 37 · 비공개 0
+묶음: quick 21 · full 50
+[종료 코드 0]
+$ python -m evalkit check-private
+비공개 입력 파일 없음: private/attack_inputs.yaml → 모든 공격 유형 시험은 자리표시로 돕니다(가짜 LLM·스텁 시연용).
+[종료 코드 0]
+$ grep -E '^(name|base_url|health_url|model_label):' targets/shop-bot-py.yaml
+name: shop-bot-py
+base_url: "http://127.0.0.1:8080"
+health_url: "http://127.0.0.1:8082/healthz"          # 관리 앱(루프백)
+model_label: "fake-shop-model (tools/fake_llm.py, 127.0.0.1:8070)"
+[종료 코드 0]

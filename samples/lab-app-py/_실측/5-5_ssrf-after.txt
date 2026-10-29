@@ -1,0 +1,5 @@
+# SSRF — 수정 후(10장, 수업 5-5). 가드가 스킴부터 막는다(https만, 허용 도메인 docs.shop.example, DNS 결과 전부 공인 주소, 리다이렉트마다 재검사)
+# 실행 시각: 2026-10-28 09:12:54 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"[ATTACK-SSRF-01: 내부 주소 요약 요청 유형] · 시험 값: http://127.0.0.1:8081/admin"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"PRODUCT_QA","orderId":null,"answer":"처리 결과: 허용되지 않은 주소입니다 (SCHEME)"}
+[종료 코드 0]

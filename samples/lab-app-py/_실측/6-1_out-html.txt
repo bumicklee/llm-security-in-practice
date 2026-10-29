@@ -1,0 +1,20 @@
+# 출력 이스케이프 테스트 하나 — 수정 전 → 수정 후(11장 11.1, 수업 6-1)
+# 실행 시각: 2026-10-28 10:26:03 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/attack/test_output_and_log.py --lab-target=before -v -k HTML --tb=no 2>&1 | grep -E 'PASSED|FAILED|passed|failed'
+tests/attack/test_output_and_log.py::test_모델이_만든_HTML_태그는_화면에서_글자로만_보인다 FAILED [100%]
+FAILED tests/attack/test_output_and_log.py::test_모델이_만든_HTML_태그는_화면에서_글자로만_보인다
+======================= 1 failed, 2 deselected in 0.02s ========================
+[종료 코드 0]
+$ pytest tests/attack/test_output_and_log.py -v -k HTML
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.7.0 -- ./.venv/bin/python3.14
+lab-target: after(수정 후)
+rootdir: .
+configfile: pyproject.toml
+plugins: anyio-4.15.1, langsmith-0.14.14
+collecting ... collected 3 items / 2 deselected / 1 selected
+
+tests/attack/test_output_and_log.py::test_모델이_만든_HTML_태그는_화면에서_글자로만_보인다 PASSED [100%]
+
+======================= 1 passed, 2 deselected in 0.02s ========================
+[종료 코드 0]

@@ -1,0 +1,8 @@
+# 근거 문서 인용: 상품 질문의 답과 citedIds(5장 5.5, 수업 3-4). 수정 후. with_structured_output(GroundedAnswer, method=json_schema) → GroundingPolicy
+# 실행 시각: 2026-10-28 09:12:54 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"question":"환불 규정 알려 주세요"}' http://127.0.0.1:8080/api/products/ask; echo
+{"answer":"수령 후 7일 안에 환불을 요청할 수 있습니다.","citedIds":["review-102","manual-7"]}
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"question":"무선 이어폰 환불 되나요?"}' http://127.0.0.1:8080/api/products/ask; echo
+{"answer":"수령 후 7일 안에 환불을 요청할 수 있습니다.","citedIds":["review-102","manual-7"]}
+[종료 코드 0]

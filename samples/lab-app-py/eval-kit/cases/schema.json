@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ganada-mall.example.test/schemas/evalkit-case.json",
+  "title": "evalkit 시험 문제 한 개 (3장 · 부록 A)",
+  "description": "evalkit/cases.py의 validate_case가 같은 규칙을 코드로 검사한다(외부 패키지 없이). 이 파일은 사람과 편집기를 위한 설명서다. 공격 유형(injection, leak-system, multiturn)은 input_ref + 자리표시 input만 허용한다.",
+  "type": "object",
+  "required": ["id", "title", "category", "severity", "intent", "input", "expected_behavior", "graders"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^(C-)?[A-Z]+-\\d{2,3}$", "examples": ["C-INJ-01", "C-TENANT-01", "P-01", "REG-051"]},
+    "title": {"type": "string", "description": "유형 — 짧은 설명. 보고서 제목으로 쓰인다"},
+    "category": {"enum": ["injection", "leak-system", "leak-pii", "benign", "indirect", "tool", "authz", "tenant", "multiturn"]},
+    "severity": {"enum": ["critical", "high", "medium", "low"], "description": "thresholds.yaml의 기준선·반복 횟수를 정한다"},
+    "owasp": {"type": "array", "items": {"pattern": "^LLM(0[1-9]|10)$"}, "description": "OWASP Top 10 for LLM Applications 2025 번호"},
+    "suites": {"type": "array", "items": {"enum": ["quick", "full"]}, "default": ["full"]},
+    "gate": {"enum": ["block", "warn"], "description": "없으면 thresholds.yaml의 gate_by_category"},
+    "session": {"type": "string", "description": "대상 설정 sessions의 이름(shop-bot: alice·bob·dave·carol). 없으면 default_session. session_aliases로 바꿀 수 있다"},
+    "endpoint": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "대상 설정 endpoints의 이름(예: product_qa). 없으면 chat"},
+    "intent": {"type": "string", "description": "4요소 ① 무엇을 보려는 시험인가"},
+    "input_ref": {"type": "string", "pattern": "^ATTACK-[A-Z]+-[A-Z0-9]+(-T\\d+)?$", "description": "비공개 입력 파일의 항목 이름"},
+    "input": {"type": "string", "description": "4요소 ② 공개 질문(정상·평범한 요청) 또는 '[ATTACK-...] 유형 — 자리표시'"},
+    "turns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": {"enum": ["user", "assistant"]},
+          "content": {"type": "string"},
+          "ref": {"type": "string", "description": "자리표시 turn이면 필수"}
+        }
+      }
+    },
+    "setup": {"type": "object", "properties": {"fixtures": {"type": "boolean"}}, "additionalProperties": false},
+    "expected_behavior": {"type": "string", "description": "4요소 ③ 거절만이 아니라 '규칙 안에서 도움'도 기대 행동"},
+    "graders": {
+      "type": "array",
+      "minItems": 1,
+      "description": "4요소 ④ 판정. 규칙 판정이 먼저, llm_judge는 규칙이 모두 통과했을 때만 불린다",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {"enum": ["http_ok", "response_schema", "canary_absent", "contains_any", "not_contains_any",
+                            "regex_present", "regex_absent", "pii_format_absent", "no_foreign_pii", "is_refusal",
+                            "not_refusal", "no_unauthorized_promise", "no_url_outside_allowlist", "tool_called",
+                            "tool_not_called", "no_unauthorized_tool_success", "no_foreign_tenant_doc", "llm_judge"]},
+          "values": {"type": "array", "items": {"type": "string"}},
+          "pattern": {"type": "string"},
+          "name": {"type": "string"},
+          "names": {"type": "array", "items": {"type": "string"}},
+          "rubric": {"type": "string"},
+          "include_secrets": {"type": "boolean"},
+          "allow_own": {"type": "boolean"},
+          "required": {"type": "object"}
+        }
+      }
+    },
+    "repeat": {"type": "integer", "minimum": 1, "maximum": 50},
+    "owner": {"type": "string"},
+    "added": {"type": "string"},
+    "notes": {"type": "string"},
+    "source_incident": {"type": "string", "description": "운영 사고에서 온 회귀 시험 문제의 기록 경로(14장)"}
+  }
+}

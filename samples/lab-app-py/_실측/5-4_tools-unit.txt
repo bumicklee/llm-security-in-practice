@@ -1,0 +1,16 @@
+# 도구 단위 테스트(9장 9.5, 수업 5-4)
+# 실행 시각: 2026-10-28 10:26:02 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/unit/test_tools_unit.py -v
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.7.0 -- ./.venv/bin/python3.14
+lab-target: after(수정 후)
+rootdir: .
+configfile: pyproject.toml
+plugins: anyio-4.15.1, langsmith-0.14.14
+collecting ... collected 2 items
+
+tests/unit/test_tools_unit.py::test_도구_인자는_사용자_입력처럼_검증한다 PASSED [ 50%]
+tests/unit/test_tools_unit.py::test_등록하지_않은_도구는_허용되지_않는다 PASSED [100%]
+
+============================== 2 passed in 0.01s ===============================
+[종료 코드 0]

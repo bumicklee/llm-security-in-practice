@@ -1,0 +1,25 @@
+# 요금·권한·SSRF 공격 테스트 — 수정 전(12장, 수업 7-3)
+# 실행 시각: 2026-10-28 09:11:50 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/attack/test_rate_limit.py tests/attack/test_token_budget.py tests/attack/test_tool_authorization.py tests/attack/test_ssrf.py --lab-target=before -v --tb=no 2>&1 | grep -E 'PASSED|FAILED|passed|failed'
+tests/attack/test_rate_limit.py::test_반복_호출은_429로_막히고_모델_호출_수가_한도를_넘지_않는다 FAILED [  9%]
+tests/attack/test_rate_limit.py::test_한_사용자가_막혀도_다른_사용자는_통과한다 PASSED [ 18%]
+tests/attack/test_token_budget.py::test_아주_긴_입력은_모델에_닿지_않는다 FAILED [ 27%]
+tests/attack/test_token_budget.py::test_대화가_길어져도_요청당_메시지_수는_창_크기를_넘지_않는다 FAILED [ 36%]
+tests/attack/test_tool_authorization.py::test_bob은_alice의_주문을_취소할_수_없다 FAILED [ 45%]
+tests/attack/test_tool_authorization.py::test_bob은_alice의_주문_상태도_볼_수_없다 FAILED [ 54%]
+tests/attack/test_tool_authorization.py::test_본인_주문도_승인_전에는_취소되지_않고_승인_후에만_바뀐다 FAILED [ 63%]
+tests/attack/test_ssrf.py::test_내부_관리_페이지를_직접_부를_수_없다 FAILED [ 72%]
+tests/attack/test_ssrf.py::test_허용_도메인의_리다이렉트로_내부에_들어갈_수_없다 FAILED [ 81%]
+tests/attack/test_ssrf.py::test_허용_도메인이라도_사설_주소로_해석되면_막는다 FAILED [ 90%]
+tests/attack/test_ssrf.py::test_허용된_공개_문서는_가져온다 PASSED       [100%]
+FAILED tests/attack/test_rate_limit.py::test_반복_호출은_429로_막히고_모델_호출_수가_한도를_넘지_않는다
+FAILED tests/attack/test_token_budget.py::test_아주_긴_입력은_모델에_닿지_않는다
+FAILED tests/attack/test_token_budget.py::test_대화가_길어져도_요청당_메시지_수는_창_크기를_넘지_않는다
+FAILED tests/attack/test_tool_authorization.py::test_bob은_alice의_주문을_취소할_수_없다
+FAILED tests/attack/test_tool_authorization.py::test_bob은_alice의_주문_상태도_볼_수_없다
+FAILED tests/attack/test_tool_authorization.py::test_본인_주문도_승인_전에는_취소되지_않고_승인_후에만_바뀐다
+FAILED tests/attack/test_ssrf.py::test_내부_관리_페이지를_직접_부를_수_없다
+FAILED tests/attack/test_ssrf.py::test_허용_도메인의_리다이렉트로_내부에_들어갈_수_없다
+FAILED tests/attack/test_ssrf.py::test_허용_도메인이라도_사설_주소로_해석되면_막는다
+========================= 9 failed, 2 passed in 0.03s ==========================
+[종료 코드 0]

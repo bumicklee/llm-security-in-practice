@@ -1,0 +1,35 @@
+# docker compose config 요약(이미지·포트 바인딩). 호스트 6379·8090이 다른 앱에 쓰이고 있어 REDIS_HOST_PORT=16379 BILL_BOARD_PORT=18090. Docker 자격 도우미 문제를 피하려고 DOCKER_CONFIG를 이 셸에서만 빈 설정 폴더로, DOCKER_HOST를 Desktop 소켓으로 바꿨다(08 ENV.md와 같은 방법, 명령 줄 밖에서 export)
+# 실행 시각: 2026-10-28 07:40:58 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ REDIS_HOST_PORT=16379 BILL_BOARD_PORT=18090 docker compose --profile redis config | grep -E '^  [a-z-]+:$|image:|host_ip|published|target:'
+  bill-board:
+    image: python:3.14.10-slim-trixie
+        host_ip: 127.0.0.1
+        target: 8090
+        published: "18090"
+        target: /app
+  fake-llm:
+    image: python:3.14.10-slim-trixie
+        host_ip: 127.0.0.1
+        target: 8070
+        published: "8070"
+        target: /app
+  fake-mcp:
+      target: fake-mcp
+        host_ip: 127.0.0.1
+        target: 8095
+        published: "8095"
+  shop-bot:
+      target: app
+        host_ip: 127.0.0.1
+        target: 8080
+        published: "8080"
+        host_ip: 127.0.0.1
+        target: 8082
+        published: "8082"
+  vector-db:
+    image: redis:8.10.3
+        host_ip: 127.0.0.1
+        target: 6379
+        published: "16379"
+  default:
+[종료 코드 0]

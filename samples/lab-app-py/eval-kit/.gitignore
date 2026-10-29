@@ -1,0 +1,15 @@
+# 비공개 입력(공격 유형 실제 문구)은 절대 커밋하지 않는다
+private/attack_inputs.yaml
+private/*.private.*
+# 실행 결과(보고서는 CI 산출물로 보관)
+results/
+promptfoo/promptfooconfig.generated.yaml
+__pycache__/
+.bot.log
+# garak 실행 결과(프로브 원문이 들어 있음)
+*.report.jsonl
+*.hitlog.jsonl
+*.report.html
+garak_runs/
+.fake-llm.log
+.shop-bot.log

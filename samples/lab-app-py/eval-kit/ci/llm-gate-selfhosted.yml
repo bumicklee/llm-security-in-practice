@@ -1,0 +1,61 @@
+# LLM 출시 게이트 — 자체 호스팅 러너 + 로컬 모델 (출시 전 전체 묶음용, 선택)
+# 대응: 12장(CI에서 실제 모델 쓰기), 11-3 · 설계 5.7("실제 모델 실행은 자체 호스팅 러너 선택, 결과는 【작성자 실측】")
+# 쓰는 법: 실습 저장소(lab-app 뿌리)의 .github/workflows/ 로 복사한다. 표준 러너 게이트는 .github/workflows/llm-gate.yml
+# 전제(【작성자 실측】): 러너 PC에 LM Studio가 127.0.0.1:1234 에 떠 있고, shop-bot-py lmstudio 프로필의 모델 이름(LLM_MODEL)이 맞다.
+# 확인 필요: 자체 호스팅 러너 라벨 이름. 러너는 v2.327.1 이상(node24 액션).
+# 액션은 커밋 SHA로 고정(주석이 태그, 2026-10-28 확인값). checkout은 persist-credentials: false(llm-gate.yml과 같은 이유).
+# 주의: 자체 호스팅 러너는 공개 저장소의 포크 PR에서 돌리지 않는다(남의 코드가 내 PC에서 돈다). 그래서 수동·태그로만 돈다.
+name: llm-gate-model
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["release-*"]
+
+permissions:
+  contents: read
+
+jobs:
+  gate-model:
+    runs-on: [self-hosted]
+    timeout-minutes: 60
+    env:
+      JUDGE_BASE_URL: "http://127.0.0.1:1234/v1"
+      JUDGE_MODEL: "local-judge-model"  # 채점관은 대상과 다른 모델 권장, 7B 이상 권장
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: 비공개 입력 넣기(있을 때만, 문구는 로그에 찍지 않음)
+        env:
+          EVAL_PRIVATE_INPUTS_B64: ${{ secrets.EVAL_PRIVATE_INPUTS_B64 }}
+        run: |
+          if [ -n "$EVAL_PRIVATE_INPUTS_B64" ]; then
+            echo "$EVAL_PRIVATE_INPUTS_B64" | base64 -d > eval-kit/private/attack_inputs.yaml
+          fi
+      - name: 모델 서버 확인
+        run: curl -sf "$JUDGE_BASE_URL/models" > /dev/null
+      - name: shop-bot-py 띄우기(lmstudio + eval 프로필, 127.0.0.1:8080)
+        run: |
+          python -m venv .venv && .venv/bin/pip install -q -r requirements.lock
+          LAB_PROFILES=lmstudio,eval nohup .venv/bin/uvicorn shopbot.main:app --host 127.0.0.1 --port 8080 > shop-bot.log 2>&1 &
+          echo $! > shop-bot.pid
+          for _ in $(seq 1 90); do curl -sf http://127.0.0.1:8082/healthz && exit 0; sleep 1; done
+          exit 1
+      - name: 전체 묶음 + 채점관
+        run: |
+          cd eval-kit
+          python3 -m evalkit run --target targets/shop-bot-py.yaml --suite full --judge-mode openai --gate --out results
+      - name: 보고서 올리기
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: llm-gate-model
+          path: eval-kit/results/latest/
+          retention-days: 90
+          if-no-files-found: ignore
+      - name: 정리
+        if: always()
+        run: |
+          rm -f eval-kit/private/attack_inputs.yaml
+          if [ -f shop-bot.pid ]; then kill "$(cat shop-bot.pid)" || true; fi

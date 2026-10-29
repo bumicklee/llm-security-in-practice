@@ -1,0 +1,14 @@
+# eval 프로필을 컨테이너에서 켠 경우(LAB_PROFILES=eval docker compose up -d shop-bot). 호스트 요청은 도커 게이트웨이 주소로 들어와 루프백 검사에 걸린다 → 평가 키트는 호스트에서 띄운 uvicorn으로
+# 실행 시각: 2026-10-28 07:41:07 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ LAB_PROFILES=eval REDIS_HOST_PORT=16379 BILL_BOARD_PORT=18090 docker compose --profile redis up -d shop-bot 2>&1 | tail -1; for i in $(seq 1 40); do curl -sf http://127.0.0.1:8082/healthz > /dev/null && break; sleep 0.5; done; echo ready
+ Container shop-bot-py-lab-shop-bot-1  Started
+ready
+[종료 코드 0]
+$ curl -s -i -u alice:FAKE-pass-0000 -X POST -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8080/api/lab/eval/reset | grep -E '^HTTP|^\{'; echo
+HTTP/1.1 403 Forbidden
+{"error":"LOOPBACK_ONLY"}
+
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"주문 1001 배송 언제 와요?"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"ORDER_STATUS","orderId":"1001","answer":"처리 결과: 주문 1001: PAID · 수령인 연락처 010-0000-0001 alice@shop-a.example","trace":{"request_id":"req-9bde7e3b","tool_calls":[{"name":"getOrderStatus","arguments":{"orderId":"1001"},"status":"EXECUTED"}]}}
+[종료 코드 0]

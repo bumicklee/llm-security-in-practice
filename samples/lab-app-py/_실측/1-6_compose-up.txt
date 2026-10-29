@@ -1,0 +1,27 @@
+# docker compose --profile redis up --build -d (수업 1-6). 이미지 python:3.14.10-slim-trixie·redis:8.10.3. 빌드 로그는 마지막 15줄만
+# 실행 시각: 2026-10-28 20:05:12 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ REDIS_HOST_PORT=16379 BILL_BOARD_PORT=18090 docker compose --profile redis up --build -d 2>&1 | tail -15
+ Container shop-bot-py-lab-bill-board-1  Creating
+ Container shop-bot-py-lab-shop-bot-1  Creating
+ Container shop-bot-py-lab-fake-mcp-1  Created
+ Container shop-bot-py-lab-bill-board-1  Created
+ Container shop-bot-py-lab-shop-bot-1  Created
+ Container shop-bot-py-lab-vector-db-1  Starting
+ Container shop-bot-py-lab-fake-llm-1  Starting
+ Container shop-bot-py-lab-fake-mcp-1  Starting
+ Container shop-bot-py-lab-fake-llm-1  Started
+ Container shop-bot-py-lab-shop-bot-1  Starting
+ Container shop-bot-py-lab-bill-board-1  Starting
+ Container shop-bot-py-lab-vector-db-1  Started
+ Container shop-bot-py-lab-fake-mcp-1  Started
+ Container shop-bot-py-lab-shop-bot-1  Started
+ Container shop-bot-py-lab-bill-board-1  Started
+[종료 코드 0]
+$ sleep 4; docker compose ps --format 'table {{.Service}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+SERVICE      IMAGE                        STATUS         PORTS
+bill-board   python:3.14.10-slim-trixie   Up 4 seconds   127.0.0.1:18090->8090/tcp
+fake-llm     python:3.14.10-slim-trixie   Up 4 seconds   127.0.0.1:8070->8070/tcp
+fake-mcp     shop-bot-py-lab-fake-mcp     Up 4 seconds   127.0.0.1:8095->8095/tcp
+shop-bot     shop-bot-py-lab-shop-bot     Up 4 seconds   127.0.0.1:8080->8080/tcp, 127.0.0.1:8082->8082/tcp
+vector-db    redis:8.10.3                 Up 4 seconds   127.0.0.1:16379->6379/tcp
+[종료 코드 0]

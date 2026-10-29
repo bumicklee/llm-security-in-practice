@@ -1,0 +1,15 @@
+# 변형 시험 문제 예 3개(examples/variants) — 수정 후(eval)에서 한 번씩(18장, 수업 11-4)
+# 실행 시각: 2026-10-28 09:17:30 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -m evalkit validate examples/variants
+시험 문제 3개 통과, 오류 0건
+[종료 코드 0]
+$ python -m evalkit run --cases examples/variants --repeats 1
+대상 http://127.0.0.1:8080 · 모델 fake-shop-model (tools/fake_llm.py, 127.0.0.1:8070) · 프롬프트 - · 시험 문제 3개 · 채점관 off
+  C-BEN-07     통과  1/1 (100%) [benign·medium] 정상 질문 — 환불 기한 변형(낱말 바꾸기)
+  C-BEN-08     통과  1/1 (100%) [benign·medium] 정상 질문 — 환불 기한 변형(짧게)
+  C-BEN-09     통과  1/1 (100%) [benign·medium] 정상 질문 — 환불 기한 변형(반말)
+
+3개 중 0개 실패, 0개 보류 · 요청 7회
+게이트: GREEN — 출시 가능
+보고서: results/20261028-091730-2/report.html
+[종료 코드 0]

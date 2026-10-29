@@ -1,0 +1,6 @@
+# 허용 목록에 없는 도구가 붙으면 앱이 뜨지 않는다(22장 실습 1단계, 수업 14-2). 랩 시연 스위치 LAB_TOOLS_ALLOWLIST_EXCLUDE=issueCoupon(허용 목록에서 뺀 것처럼 검사, 코드 수정 없음). 시작 로그에서 원인 줄만
+# 실행 시각: 2026-10-28 09:12:08 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ LAB_TOOLS_ALLOWLIST_EXCLUDE=issueCoupon uvicorn shopbot.main:app --host 127.0.0.1 --port 8080 > .lab-run/allowlist.log 2>&1; echo "uvicorn 종료 코드 $?"; grep -m1 -o 'UnknownToolError: 허용 목록에 없는 도구: .*' .lab-run/allowlist.log
+uvicorn 종료 코드 3
+UnknownToolError: 허용 목록에 없는 도구: ['issueCoupon']
+[종료 코드 0]

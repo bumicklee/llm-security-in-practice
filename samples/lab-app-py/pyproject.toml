@@ -1,0 +1,18 @@
+# 「LLM 보안 실전」 FastAPI 랩(shop-bot-py). 모든 값은 가짜, 127.0.0.1만.
+# 설치: python -m venv .venv && .venv/bin/pip install -r requirements.lock
+[project]
+name = "shop-bot-py-lab"
+version = "0.1.0"
+description = "FastAPI·LangChain 상담봇 보안 랩(방어 코드·pytest 공격 테스트·평가 키트)"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# 22장(capstone)과 계약·대조(contract)는 1~21장 숫자에 넣지 않는다 → 기본 실행에서 뺀다. `-m capstone`·`-m contract`로 따로
+addopts = "-m 'not capstone and not contract' -p no:cacheprovider"
+markers = [
+    "capstone: 22장 종합 실습(쿠폰 도구). pytest -m capstone",
+    "contract: HTTP 계약·가짜 LLM 녹화 답 대조 시험. pytest -m contract",
+]
+# 매개변수 테스트 이름(한국어 자리표시)을 \uXXXX로 바꾸지 않고 그대로 보인다(출력에서 읽기 쉽게)
+disable_test_id_escaping_and_forfeit_all_rights_to_community_support = true

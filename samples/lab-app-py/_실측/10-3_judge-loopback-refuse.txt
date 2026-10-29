@@ -1,0 +1,6 @@
+# 채점관 주소가 127.0.0.1이 아니면 거부(16장 16.3 안전장치 3, 수업 10-3). 문서용 주소 203.0.113.9 · 모델 이름은 가짜 · 실제 채점관 실행은 【작성자 실측】
+# 실행 시각: 2026-10-28 11:50:40 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ JUDGE_BASE_URL=http://203.0.113.9:1234/v1 JUDGE_MODEL=judge-FAKE python -m evalkit run --cases cases/injection --judge-mode openai; echo "exit=$?"
+설정 오류: JUDGE_BASE_URL http://203.0.113.9:1234/v1 는 127.0.0.1이 아닙니다. 채점관도 내 PC의 로컬 모델만 씁니다
+exit=2
+[종료 코드 0]

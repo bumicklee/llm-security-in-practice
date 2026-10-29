@@ -1,0 +1,6 @@
+# 원문 로그 한 줄과 안전한 로그 한 줄(그림 11-5, 11장 11.5, 수업 6-5): PromptLogPolicy.raw(수정 전) / safe(수정 후). 번호·키는 가짜 값
+# 실행 시각: 2026-10-28 12:20:17 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "from labcore.output import PromptLogPolicy, PiiMasker; p='제 번호는 010-1234-5678 이고 키는 sk-test-FAKE-0000abcd 입니다'; print('raw :', PromptLogPolicy.raw(p)); print('safe:', PromptLogPolicy.safe(p, PiiMasker()))"
+raw : prompt=제 번호는 010-1234-5678 이고 키는 sk-test-FAKE-0000abcd 입니다
+safe: promptSha256=398c887154fb len=51 masked="제 번호는 010-****-5678 이고 키는 sk-**** 입니다"
+[종료 코드 0]

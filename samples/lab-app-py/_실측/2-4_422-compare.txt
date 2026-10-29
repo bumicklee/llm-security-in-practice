@@ -1,0 +1,6 @@
+# 입력 경계 비교(4장 4.2, 수업 2-4): 같은 4,000자를 ① 랩 앱(넉넉한 스키마 + 가드 → 400)과 ② Pydantic max_length=1000만 둔 작은 앱(→ 422 string_too_long)에. 랩 안 스크립트(scripts/compare_422.py), TestClient + 가짜 채팅 모델
+# 실행 시각: 2026-10-28 10:25:51 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python scripts/compare_422.py
+① 랩 앱(ChatRequest max_length=200,000 + 입력 가드): 400 {"error":"INPUT_REJECTED","reason":"TOO_LONG","answer":"입력을 처리할 수 없습니다. 1,000자 이내로 다시 적어 주세요."} · 모델 호출 0번
+② 비교 앱(TightChatRequest max_length=1000만): 422 string_too_long
+[종료 코드 0]

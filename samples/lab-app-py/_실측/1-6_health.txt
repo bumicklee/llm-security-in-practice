@@ -1,0 +1,14 @@
+# 관리 앱 health(1-6, 8-1)는 인증 없이 200. compose로 띄운 상태에서 첫 채팅 한 번과 가짜 LLM 누적값
+# 실행 시각: 2026-10-28 07:41:03 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s http://127.0.0.1:8082/healthz; echo
+{"status":"UP"}
+[종료 코드 0]
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"주문 1001 배송 언제 와요?"}' http://127.0.0.1:8080/api/chat; echo
+{"intent":"ORDER_STATUS","orderId":"1001","answer":"처리 결과: 주문 1001: PAID · 수령인 연락처 010-0000-0001 alice@shop-a.example"}
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":2,"promptTokens":168,"completionTokens":52,"perSecond":[[1793140863,220]]}
+[종료 코드 0]
+$ curl -s -o /dev/null -w '8081(가짜 관리 페이지, 내보내지 않음): %{http_code}\n' http://127.0.0.1:8081/admin
+8081(가짜 관리 페이지, 내보내지 않음): 000
+[종료 코드 7]

@@ -1,0 +1,10 @@
+# 입력 가드·비밀 분리 단위 테스트(4장 4.1, 수업 2-3)
+# 실행 시각: 2026-10-28 10:25:50 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/unit/test_injection.py -v 2>&1 | grep -E 'PASSED|FAILED|passed|failed'
+tests/unit/test_injection.py::test_수정_후_시스템_프롬프트에는_비밀이_없다 PASSED [ 20%]
+tests/unit/test_injection.py::test_입력_경계 PASSED                      [ 40%]
+tests/unit/test_injection.py::test_스키마를_벗어난_답은_정해진_문구로 PASSED [ 60%]
+tests/unit/test_injection.py::test_할인_코드는_서버가_조건을_보고_발급한다 PASSED [ 80%]
+tests/unit/test_injection.py::test_의심_입력은_원문_없이_기록된다 PASSED [100%]
+============================== 5 passed in 0.02s ===============================
+[종료 코드 0]

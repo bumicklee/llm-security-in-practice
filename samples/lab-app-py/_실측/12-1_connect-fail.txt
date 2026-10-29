@@ -1,0 +1,5 @@
+# 앱·가짜 LLM을 띄우지 않은 채 게이트(19장 19.1 종료 코드 표, 수업 12-1): 대상 앱 연결 실패 → 종료 코드 3
+# 실행 시각: 2026-10-28 12:21:00 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -m evalkit run --suite quick --gate
+대상 오류: 대상 앱에 연결하지 못했습니다(http://127.0.0.1:8080): <urlopen error [Errno 61] Connection refused>
+[종료 코드 3]

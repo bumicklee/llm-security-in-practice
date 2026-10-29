@@ -1,0 +1,18 @@
+# 내 프로젝트의 곱하기 찾기: 설정·코드의 재시도 층(7장 7.4, 수업 4-5). openai SDK 기본 2(시도 3번) × 앞단 3 = 9번 → max_retries=1이면 6번
+# 실행 시각: 2026-10-28 09:12:06 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ grep -rn --include='*.py' --include='*.yaml' -E 'max_retries|retries|Retry' shopbot/
+shopbot/web/rate_limit.py:4:넘으면 429 + Retry-After. 모델 호출 전이므로 토큰 0. 저장소: 기본은 labcore 토큰 버킷(메모리), redis 프로필은 limits + Redis.
+shopbot/web/rate_limit.py:47:                          headers={"Retry-After": str(r.retry_after_seconds), "X-RateLimit-Remaining": str(r.remaining)})
+shopbot/agent/model.py:4:- max_retries: openai SDK 3.40.0 DEFAULT_MAX_RETRIES = 2(시도 3번). 랩 수정 후는 1(시도 2번). before 프로필은 SDK 기본값.
+shopbot/agent/model.py:19:    if s.max_retries is not None:
+shopbot/agent/model.py:20:        kwargs["max_retries"] = s.max_retries
+shopbot/settings.py:47:    max_retries: int | None = 1
+shopbot/profiles/before.yaml:3:max_retries: null        # openai SDK 기본값(2 = 시도 3번)으로 되돌림(7장 7.3)
+shopbot/profiles/default.yaml:6:max_retries: 1          # openai SDK 재시도. 기본 2(DEFAULT_MAX_RETRIES). 앞단 재시도와 곱해지므로 줄인다(8장 8.3)
+[종료 코드 0]
+$ python -c 'import openai._constants as c; print("openai", __import__("openai").__version__, "DEFAULT_MAX_RETRIES =", c.DEFAULT_MAX_RETRIES)'
+openai 3.40.0 DEFAULT_MAX_RETRIES = 2
+[종료 코드 0]
+$ python -c 'from labcore.cost import RetryAmplification as R; print("3 × 3 =", R.worst_case_calls(3, 3), "· 3 × 2 =", R.worst_case_calls(3, 2))'
+3 × 3 = 9 · 3 × 2 = 6
+[종료 코드 0]

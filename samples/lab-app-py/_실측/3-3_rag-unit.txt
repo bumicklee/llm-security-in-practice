@@ -1,0 +1,9 @@
+# RAG 수집 검사·근거 단위 테스트(5장 5.3, 수업 3-3)
+# 실행 시각: 2026-10-28 10:25:53 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/unit/test_rag.py -v 2>&1 | grep -E 'PASSED|FAILED|passed|failed'
+tests/unit/test_rag.py::test_수집_검사기는_흔적을_표시한다 PASSED        [ 25%]
+tests/unit/test_rag.py::test_문서_블록은_본문이_블록을_닫지_못하게_이스케이프된다 PASSED [ 50%]
+tests/unit/test_rag.py::test_근거가_없거나_검색되지_않은_문서를_인용하면_거절 PASSED [ 75%]
+tests/unit/test_rag.py::test_필터_문자열_이어_붙이기는_따옴표_하나로_구조가_깨진다 PASSED [100%]
+============================== 4 passed in 0.02s ===============================
+[종료 코드 0]

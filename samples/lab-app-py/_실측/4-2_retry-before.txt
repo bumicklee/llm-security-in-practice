@@ -1,0 +1,21 @@
+# 재시도 폭주 — 수정 전(before, openai SDK 기본 max_retries 2 = 시도 3번)(7장 7.3, 수업 4-2)
+# 실행 시각: 2026-10-28 20:04:32 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ curl -s -X POST 'http://127.0.0.1:8070/lab/fail?count=20'; echo
+{"failNext":20}
+[종료 코드 0]
+$ curl -s -X POST http://127.0.0.1:8070/lab/reset; echo
+{"reset":true}
+[종료 코드 0]
+$ time curl -s -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"배송 문의"}' http://127.0.0.1:8080/api/chat -o /dev/null -w '%{http_code}\n'
+500
+
+real	0m1.439s
+user	0m0.003s
+sys	0m0.004s
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":3,"promptTokens":0,"completionTokens":0,"perSecond":[]}
+[종료 코드 0]
+$ curl -s -X POST 'http://127.0.0.1:8070/lab/fail?count=0'; echo
+{"failNext":0}
+[종료 코드 0]

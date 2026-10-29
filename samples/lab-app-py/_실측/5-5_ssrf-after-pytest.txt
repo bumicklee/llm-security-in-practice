@@ -1,0 +1,19 @@
+# SSRF 테스트 — 수정 후(10장 10.2, 수업 5-5). 단위 테스트에 IPv4를 품은 IPv6 표기(IPv4 호환·NAT64·6to4·Teredo) 거부 단언 포함(2차 교차 검증 A10)
+# 실행 시각: 2026-10-28 10:26:02 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ pytest tests/unit/test_ssrf_unit.py tests/attack/test_ssrf.py -v
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.7.0 -- ./.venv/bin/python3.14
+lab-target: after(수정 후)
+rootdir: .
+configfile: pyproject.toml
+plugins: anyio-4.15.1, langsmith-0.14.14
+collecting ... collected 5 items
+
+tests/unit/test_ssrf_unit.py::test_검사_순서별_차단_사유 PASSED          [ 20%]
+tests/attack/test_ssrf.py::test_내부_관리_페이지를_직접_부를_수_없다 PASSED [ 40%]
+tests/attack/test_ssrf.py::test_허용_도메인의_리다이렉트로_내부에_들어갈_수_없다 PASSED [ 60%]
+tests/attack/test_ssrf.py::test_허용_도메인이라도_사설_주소로_해석되면_막는다 PASSED [ 80%]
+tests/attack/test_ssrf.py::test_허용된_공개_문서는_가져온다 PASSED       [100%]
+
+============================== 5 passed in 0.02s ===============================
+[종료 코드 0]

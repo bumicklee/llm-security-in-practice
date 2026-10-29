@@ -1,0 +1,19 @@
+# 가짜 MCP 서버(tools/fake_mcp.py, mcp SDK 2.3.0 MCPServer, stateless JSON 응답)의 도구 목록 점검(10장, 수업 5-6). 점검기는 앱과 같은 SDK Client(server/discover, 사양 2026-07-28)로 붙는다. 1단계 python -I tools/fake_mcp.py & 를 띄운 상태
+# 실행 시각: 2026-10-28 22:20:24 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ head -1 .lab-run/fake-mcp.log
+[fake-mcp] http://127.0.0.1:8095/mcp (도구 목록만, 실행 안 함)
+[종료 코드 0]
+$ python -I attack-kit/mcp_tool_review.py
+서버: {'name': 'fake-mcp', 'version': '0.1.0'}  사양 2026-07-28(server/discover)  도구 5개
+  [LOW   ] search_products    읽기 전용 표시(서버 주장)
+  [HIGH  ] export_customers   대량 내보내기
+  [HIGH  ] send_email         외부 전송
+  [HIGH  ] run_shell          명령 실행
+  [MEDIUM] get_coupon_rules   설명 속 지시 표지(도구 설명도 모델 입력이다)
+
+연결 전 점검표 7항목: 교재 10장 표 10-1 (인증·도구 목록·권한 범위·로그·출처·버전 고정·비활성화 방법)
+[종료 코드 0]
+$ python -I attack-kit/mcp_tool_review.py http://192.0.2.10:8095/mcp; echo "exit=$?"
+거부: 랩의 가짜 MCP 서버(http://127.0.0.1)만 점검합니다
+exit=1
+[종료 코드 0]

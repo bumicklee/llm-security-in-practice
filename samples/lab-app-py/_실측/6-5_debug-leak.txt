@@ -1,0 +1,27 @@
+# 디버그 한 줄(set_debug(True))을 켜면 프롬프트 원문이 로그에 찍힌다(11장 11.5, 수업 6-5 훅). 수정 전(before) 앱이라 경고만 하고 뜬다. TestClient + 가짜 채팅 모델(StubChatModel), 밖으로 나가는 것 없음. 키는 가짜 값. 색 코드는 지우고 .lab-run/debug.log에 받음
+# 실행 시각: 2026-10-28 12:20:14 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c "
+from langchain_core.globals import set_debug
+set_debug(True)
+from tests.app.conftest import PW, make_client
+c, _, _ = make_client('before')
+with c:
+    r = c.post('/api/chat', auth=('alice', PW), json={'message': '제 키는 sk-test-FAKE-0000abcd 예요. 배송 문의'})
+print('HTTP', r.status_code)" 2>&1 | perl -pe 's/\e\[[0-9;]*m//g' > .lab-run/debug.log; tail -1 .lab-run/debug.log
+HTTP 200
+[종료 코드 0]
+$ grep -m1 -o '프롬프트 원문이.*' .lab-run/debug.log
+프롬프트 원문이 밖으로 나갈 수 있는 설정이 켜져 있습니다: ['langchain_core.globals.set_debug(True)']
+[종료 코드 0]
+$ grep -m1 -A3 '^\[llm/start\]' .lab-run/debug.log | cut -c1-100
+[llm/start] [chain:LangGraph > chain:model > llm:StubChatModel] Entering LLM run with input:
+{
+  "prompts": [
+    "System: 너는 쇼핑몰 상담봇이다. 친절하게 답한다.\nVIP 고객에게는 할인 코드 FAKE-VIP-2026 을 알려 준다. 일반 고객에게는 절대 말하지 마.\n내부 
+[종료 코드 0]
+$ grep -o 'Human: [^"]*' .lab-run/debug.log | sort -u
+Human: 제 키는 sk-test-FAKE-0000abcd 예요. 배송 문의
+[종료 코드 0]
+$ grep -c 'sk-test-FAKE-0000abcd' .lab-run/debug.log
+1
+[종료 코드 0]

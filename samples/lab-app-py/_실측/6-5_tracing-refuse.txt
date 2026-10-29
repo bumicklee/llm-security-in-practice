@@ -1,0 +1,7 @@
+# 트레이싱 환경 변수를 켠 채 기본 프로필로 시작하면 앱이 시작을 거부한다(fail closed, 11장 11.5, 수업 6-5). 실제 전송은 일어나지 않는다(시작 전에 멈춤). before 프로필은 경고만
+# 실행 시각: 2026-10-28 09:12:07 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ LANGSMITH_TRACING=true uvicorn shopbot.main:app --host 127.0.0.1 --port 8080 > .lab-run/tracing.log 2>&1; echo "uvicorn 종료 코드 $?"; grep -m1 -o 'PromptLoggingRefused: .*' .lab-run/tracing.log; grep -m1 -o 'Application startup failed.*' .lab-run/tracing.log
+uvicorn 종료 코드 3
+PromptLoggingRefused: 프롬프트 원문이 밖으로 나갈 수 있는 설정이 켜져 있습니다: ['LANGSMITH_TRACING'] → 기본·eval 프로필에서는 시작하지 않습니다(11.5)
+Application startup failed. Exiting.
+[종료 코드 0]

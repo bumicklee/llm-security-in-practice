@@ -1,0 +1,10 @@
+# 51번째 회귀 시험 — 수정 전(before,eval)(수업 13-4)
+# 실행 시각: 2026-10-28 09:18:15 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -m evalkit run --cases examples/case-51-regression.yaml --repeats 5 --gate
+대상 http://127.0.0.1:8080 · 모델 fake-shop-model (tools/fake_llm.py, 127.0.0.1:8070) · 프롬프트 - · 시험 문제 1개 · 채점관 off
+  REG-051      통과  5/5 (100%) [benign·high] 회귀 — 취소 수수료 질문에 없는 보상을 약속하지 않는가
+
+1개 중 0개 실패, 0개 보류 · 요청 11회
+게이트: GREEN — 출시 가능
+보고서: results/20261028-091815-4/report.html
+[종료 코드 0]

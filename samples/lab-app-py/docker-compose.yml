@@ -1,0 +1,64 @@
+# 랩 한 번에 띄우기(2장 2.1, 수업 1-6). 모든 포트는 호스트의 127.0.0.1에만 묶는다(밖으로 공개 금지).
+# 실행: docker compose up --build        (Redis까지: docker compose --profile redis up --build)
+# 확인: 채팅 http://127.0.0.1:8080 · 관리 http://127.0.0.1:8082/healthz · 요금 대시보드 http://127.0.0.1:8090 · 가짜 LLM http://127.0.0.1:8070/usage
+# 포트가 이미 쓰이고 있으면 호스트 쪽 번호만 바꾼다(앞의 127.0.0.1은 바꾸지 않는다). 예: REDIS_HOST_PORT=16379 BILL_BOARD_PORT=18090
+# 컨테이너 안에서는 0.0.0.0으로 듣지만(HOST·BIND), 호스트 쪽 공개는 "127.0.0.1:" 바인딩으로만 한다.
+# 도커 없이 띄우는 길이 기본이다(README 1-6: venv → python -I tools/fake_llm.py & → uvicorn).
+name: shop-bot-py-lab
+
+services:
+  shop-bot:
+    build:
+      context: .
+      target: app
+    environment:
+      HOST: 0.0.0.0                            # 본 앱(8080)과 관리 앱(8082)이 컨테이너 안에서 듣는 주소
+      LLM_BASE_URL: http://fake-llm:8070/v1    # openai SDK는 base_url 뒤에 /chat/completions를 붙인다
+      OPENAI_API_KEY: sk-test-FAKE-0000        # 가짜 키
+      # 프로필: 기본 = 수정 후. 수정 전은 LAB_PROFILES=before docker compose up -d shop-bot
+      # 주의: eval 프로필의 /api/lab/eval/*은 요청 주소가 127.0.0.1일 때만 받는다. 컨테이너에서는 호스트 요청이
+      #       도커 게이트웨이 주소로 들어와 403(LOOPBACK_ONLY)이 된다 → 평가 키트는 호스트에서 띄운 uvicorn에 붙인다
+      LAB_PROFILES: ${LAB_PROFILES:-default}
+      REDIS_URL: redis://vector-db:6379/0      # redis 프로필(LAB_PROFILES=redis)일 때만 쓴다
+    ports:
+      - "127.0.0.1:${SHOP_BOT_PORT:-8080}:8080"        # 채팅 화면·API
+      - "127.0.0.1:${SHOP_BOT_MGMT_PORT:-8082}:8082"   # 관리 앱(/healthz, /metrics)
+      # 8081(가짜 관리 페이지)은 일부러 내보내지 않는다: 컨테이너 안 127.0.0.1에서만 열림 = SSRF 실습 대상
+    depends_on:
+      - fake-llm
+
+  fake-llm:
+    image: python:3.14.10-slim-trixie
+    command: ["python", "-I", "/app/fake_llm.py"]   # 표준 라이브러리만
+    environment:
+      BIND: 0.0.0.0
+    volumes:
+      - ./tools:/app:ro
+    ports:
+      - "127.0.0.1:${FAKE_LLM_HOST_PORT:-8070}:8070"
+
+  bill-board:
+    image: python:3.14.10-slim-trixie
+    command: ["python", "-I", "/app/bill_board.py"]
+    environment:
+      BIND: 0.0.0.0
+      FAKE_LLM_URL: http://fake-llm:8070
+    volumes:
+      - ./tools:/app:ro
+    ports:
+      - "127.0.0.1:${BILL_BOARD_PORT:-8090}:8090"
+    depends_on:
+      - fake-llm
+
+  fake-mcp:
+    build:
+      context: .
+      target: fake-mcp                         # mcp SDK가 필요해 앱 이미지의 의존성 단계를 다시 쓴다
+    ports:
+      - "127.0.0.1:${FAKE_MCP_PORT:-8095}:8095"
+
+  vector-db:                                   # 선택: Redis 8(벡터 검색·레이트 리밋 저장소). 태그 고정 redis:8.10.3
+    image: redis:8.10.3
+    profiles: ["redis"]
+    ports:
+      - "127.0.0.1:${REDIS_HOST_PORT:-6379}:6379"

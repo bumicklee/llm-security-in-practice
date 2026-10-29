@@ -1,0 +1,17 @@
+# 입력 경계: 4,000자 입력은 모델에 가기 전에 400(4장 4.2, 수업 2-4). 수정 후(기본 프로필)·가짜 LLM을 막 띄운 상태. Pydantic 길이 제약이면 422가 나므로 검사는 가드(의존성)가 한다. long.json은 lab-app-py 폴더에 만든다
+# 실행 시각: 2026-10-28 09:12:53 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
+$ python -c 'import json;print(json.dumps({"message":"가"*4000}))' > long.json && wc -c long.json
+   24016 long.json
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":0,"promptTokens":0,"completionTokens":0,"perSecond":[]}
+[종료 코드 0]
+$ curl -s -i -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d @long.json http://127.0.0.1:8080/api/chat | grep -iE '^HTTP|^x-request-id|^\{'; echo
+HTTP/1.1 400 Bad Request
+x-request-id: req-25feff11
+{"error":"INPUT_REJECTED","reason":"TOO_LONG","answer":"입력을 처리할 수 없습니다. 1,000자 이내로 다시 적어 주세요."}
+
+[종료 코드 0]
+$ curl -s http://127.0.0.1:8070/usage; echo
+{"requests":0,"promptTokens":0,"completionTokens":0,"perSecond":[]}
+[종료 코드 0]
