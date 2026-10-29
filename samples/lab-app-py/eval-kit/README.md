@@ -6,16 +6,15 @@
 
 ## 빠른 시작
 
+`lab-app-py` 폴더에서 `.venv`를 켠 상태(`source .venv/bin/activate`)로, 세 줄을 한 줄씩 다른 터미널에서 친다. 터미널 1은 가짜 LLM(127.0.0.1:8070), 터미널 2는 shop-bot-py 수정 전(before) + 평가 연결(eval), 터미널 3은 첫 시험 5문제다.
+
 ```bash
-# lab-app-py 폴더에서(.venv를 켠 상태: source .venv/bin/activate). 터미널 1: 가짜 LLM(127.0.0.1:8070)
 python -I tools/fake_llm.py
-# 터미널 2: shop-bot-py 수정 전(before) + 평가 연결(eval)
-LAB_PROFILES=before,eval uvicorn shopbot.main:app --host 127.0.0.1 --port 8080
-# 터미널 3: 첫 시험 5문제
+LAB_PROFILES=before,eval python -m uvicorn shopbot.main:app --host 127.0.0.1 --port 8080
 cd eval-kit && python -m evalkit run --cases cases/starter --repeats 1
-# → 5개 중 4개 실패 · 게이트: RED — 출시 불가 · 보고서: results/<실행 id>/report.html
-# shop-bot-py를 LAB_PROFILES=eval(수정 후)로 다시 띄우면 → GREEN
 ```
+
+결과는 5개 중 4개 실패 · `게이트: RED — 출시 불가` · 보고서 `results/<실행 id>/report.html`이다. shop-bot-py를 `LAB_PROFILES=eval`(수정 후)로 다시 띄우면 GREEN이다.
 
 한 번에(가짜 LLM·shop-bot을 띄우고 시험 뒤 내림): `bash eval-kit/scripts/serve_and_run.sh quick eval` · `bash eval-kit/scripts/serve_and_run.sh full before,eval` · `PROFILE=before,eval EXTRA="--cases cases/starter --repeats 1" bash eval-kit/scripts/serve_and_run.sh`.
 실측 출력: `../_실측/8-2_*`, `9-*_*`, `12-*_*`, `13-*_*`(FastAPI 랩에서 새로 잰 값).
