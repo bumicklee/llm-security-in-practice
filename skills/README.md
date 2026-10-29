@@ -20,14 +20,16 @@
 
 ## 설치(내 프로젝트·랩 저장소 루트에서)
 
+`REPO=` 뒤에는 git clone으로 받은 `llm-security-in-practice` 폴더의 내 경로를 넣는다. `.claude/settings.json`이 이미 있으면 덮어쓰지 말고 합친다. 마지막 줄은 훅이 fail closed인지 확인한다.
+
 ```bash
-REPO=~/work/llm-security-in-practice   # git clone으로 받은 llm-security-in-practice 폴더(내 경로로 바꾼다)
+REPO=~/work/llm-security-in-practice
 mkdir -p .claude/skills .claude/hooks
 cp -R "$REPO"/skills/llm-security-review "$REPO"/skills/llm-attack-tests \
       "$REPO"/skills/llm-case-writer "$REPO"/skills/llm-release-check .claude/skills/
 cp "$REPO"/skills/hooks/*.sh .claude/hooks/ && chmod +x .claude/hooks/*.sh
-cp "$REPO"/skills/settings/settings.example.json .claude/settings.json   # 이미 있으면 합친다
-bash .claude/hooks/test-hooks.sh                                         # 훅이 fail closed인지 확인
+cp "$REPO"/skills/settings/settings.example.json .claude/settings.json
+bash .claude/hooks/test-hooks.sh
 ```
 
 - 스킬 부르기: `/llm-security-review samples/lab-app-py`, `/llm-attack-tests tests/attack`, `/llm-case-writer benign 환불`, `/llm-release-check full before,eval`. 앞의 셋은 "출시 전 보안 점검해 줘"처럼 말해도 설명을 보고 고른다. `llm-release-check`는 명령을 실행하므로 `disable-model-invocation: true`로 **사람이 부를 때만** 돈다.
@@ -52,7 +54,7 @@ bash .claude/hooks/test-hooks.sh                                         # 훅�
 
 | 규칙 | 이유 |
 | --- | --- |
-| allow: `python -m pytest *`·`pytest *`, `uvicorn shopbot.main:app --host 127.0.0.1 *`, 가짜 LLM·가짜 MCP(`python -I tools/fake_*.py`), `mcp_tool_review.py`, `check-attack-ids.py`, `scan.sh`, `summarize.py`, `test-hooks.sh`, `evalkit validate/list/check-private`, `check.sh`, `serve_and_run.sh` | 테스트·랩 기동·읽기·점검 명령은 매번 묻지 않게 |
+| allow: `python -m pytest *`·`pytest *`, `uvicorn shopbot.main:app --host 127.0.0.1 *`·`python -m uvicorn shopbot.main:app --host 127.0.0.1 *`, 가짜 LLM·가짜 MCP(`python -I tools/fake_*.py`), `mcp_tool_review.py`, `check-attack-ids.py`, `scan.sh`, `summarize.py`, `test-hooks.sh`, `evalkit validate/list/check-private`, `check.sh`, `serve_and_run.sh` | 테스트·랩 기동·읽기·점검 명령은 매번 묻지 않게 |
 | ask: `flood.sh`·`run-attacks.sh`·`wobble.sh`·`docker compose` | 요청을 많이 보내거나 컨테이너를 띄우는 명령은 사람이 본다 |
 | ask: `Edit(./.github/workflows/**)`, `thresholds.yaml`, `accepted_risks.yaml`, `eval-kit/ci/**`, `requirements.lock`, `shopbot/profiles/**` | 게이트 기준·수용한 위험·워크플로·잠금 파일·방어 스위치는 사람이 정한다(AI가 초록불을 만들지 않게, 19장) |
 | deny: `.env`, 비공개 입력 파일 읽기·수정, `git push` | 비밀·공격 문구가 대화·로그로 새지 않게 |
@@ -64,7 +66,7 @@ bash .claude/hooks/test-hooks.sh                                         # 훅�
 - **deny는 보안 경계가 아니다.** Bash deny는 Claude가 보통 만드는 형태만 잡는다. `sh -c '…'`·절대 경로 실행·스크립트 안 호출은 못 잡는다(permissions 문서). 실제 방어는 키트·스크립트 코드의 검사다(대상 호스트가 127.0.0.1이 아니면 `authorized_by` + `--allow-remote-target`가 둘 다 있어야 실행, `attack-kit/_loopback.sh`).
 - 권한 규칙은 **공백 형식**(`Bash(python -m pytest *)`)을 쓴다. `:*`는 끝에 올 때만 같은 뜻으로 인정된다. 끝의 ` *`는 인자 없는 명령도 맞춘다.
 - 복합 명령(`&&`·`;`·`|`)은 부분 명령마다 규칙을 본다. 작업 폴더 안으로의 `cd`는 읽기 전용으로 쳐서, `cd eval-kit && python -m evalkit validate cases`는 evalkit 규칙만 맞으면 묻지 않는다. deny·ask는 부분 명령 하나만 맞아도 걸린다.
-- allow 규칙은 알려진 안전한 변수 외의 환경 변수 앞붙이기를 넘어서 일치하지 않는다. `LAB_PROFILES=before uvicorn …`·`LAB_DEFENSE_OFF=… uvicorn …`은 매번 묻는다(의도한 동작: 방어를 끄는 실행은 사람이 본다). deny·ask는 앞붙이기를 넘어서도 맞는다.
+- allow 규칙은 알려진 안전한 변수 외의 환경 변수 앞붙이기를 넘어서 일치하지 않는다. `LAB_PROFILES=before python -m uvicorn …`·`LAB_DEFENSE_OFF=… python -m uvicorn …`은 매번 묻는다(의도한 동작: 방어를 끄는 실행은 사람이 본다). deny·ask는 앞붙이기를 넘어서도 맞는다.
 - 규칙은 deny → ask → allow 순서로 보고 처음 맞는 것이 이긴다.
 - 경로: `./…`는 현재 폴더 기준, `/…`는 설정 출처 기준(프로젝트 설정이면 프로젝트 루트), `//…`는 절대 경로, `~/…`는 홈.
 - `Read` deny는 Claude Code 파일 도구와 Claude가 알아보는 Bash 파일 명령(`cat`·`head`·`tail`·`sed` 등)에 적용된다. 파일 이름 없이 읽는 명령(`grep -r … .`)이나 파일을 스스로 여는 스크립트는 막지 못한다. 비공개 입력 파일은 **저장소 밖**에 두는 것이 가장 확실하다.

@@ -37,7 +37,7 @@ VIP 고객에게는 할인 코드 {할인_코드} 을 알려 준다. 일반 고�
 - 가짜 LLM이 시스템 프롬프트를 통째로 읊어도 비밀이 없다.
 - 카나리가 답에 나오면 `LeakDetector`(`labcore/injection`)가 잡고, `ReplyPolicy`가 정해진 거절 문구로 바꾼다.
 - 지키는 테스트: `tests/unit/test_injection.py::test_수정_후_시스템_프롬프트에는_비밀이_없다`, `tests/attack/test_prompt_injection.py::test_직접_인젝션에도_비밀이_새지_않는다`, `tests/app/test_shopbot_security.py::test_직접_인젝션에도_가짜_할인_코드와_카나리가_새지_않는다`
-- 전후 비교: `LAB_DEFENSE_OFF=secret_free_prompt uvicorn shopbot.main:app --host 127.0.0.1 --port 8080`(이 스위치만 끔)
+- 전후 비교: `LAB_DEFENSE_OFF=secret_free_prompt python -m uvicorn shopbot.main:app --host 127.0.0.1 --port 8080`(이 스위치만 끔)
 
 ## 주의
 

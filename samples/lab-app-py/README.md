@@ -21,28 +21,33 @@
 
 ## 실행 순서(도커 없이, 수업 1-6)
 
+명령은 한 줄씩 그대로 붙여 넣는다(맥 기본 zsh는 대화형에서 `#`을 주석으로 읽지 않아 명령 블록에 주석을 두지 않는다). Python은 3.11 이상이면 된다(예는 3.14). 가짜 LLM은 127.0.0.1:8070, 상담봇은 127.0.0.1:8080에 뜨고 관리 앱 127.0.0.1:8082/healthz도 같이 뜬다. 서버는 venv를 켠 상태에서 `python -m uvicorn`으로 띄운다. venv를 켠 뒤 pyenv 오류(`version '3.14' is not installed`)가 나면 `rehash`를 치고, 그래도 나면 `pyenv install 3.14` 또는 Homebrew python3.14로 venv를 만든 뒤 `.venv/bin/python -m uvicorn …`으로 띄운다.
+
 ```bash
 git clone https://github.com/bumicklee/llm-security-in-practice.git && cd llm-security-in-practice/samples/lab-app-py
-python3.14 -m venv .venv && .venv/bin/pip install -r requirements.lock   # 3.11 이상이면 된다
+python3.14 -m venv .venv && .venv/bin/pip install -r requirements.lock
 source .venv/bin/activate
-python -I tools/fake_llm.py &                                            # 127.0.0.1:8070
-uvicorn shopbot.main:app --host 127.0.0.1 --port 8080                    # 관리 앱 127.0.0.1:8082/healthz 도 같이 뜬다
+python -I tools/fake_llm.py &
+python -m uvicorn shopbot.main:app --host 127.0.0.1 --port 8080
 ```
 
-- 수정 전: `LAB_PROFILES=before uvicorn …` · 평가 키트 연결: `LAB_PROFILES=eval` 또는 `before,eval`
+- 수정 전: `LAB_PROFILES=before python -m uvicorn …` · 평가 키트 연결: `LAB_PROFILES=eval` 또는 `before,eval`
 - 방어 하나만 바꾸기: `LAB_DEFENSE_OFF=input_guard` / `LAB_DEFENSE_ON=secret_free_prompt`(스위치 11개 이름은 `shopbot/settings.py`)
 - 한 번에: `docker compose up --build`(평가 키트는 호스트에서 띄운 uvicorn에 붙인다. 컨테이너 안 eval 프로필은 403)
 
 ## 수정 전/후 쌍 (빨강 → 초록)
 
+차례대로: 수정 후 49개 초록 → 수정 전 공격 테스트 23개 빨강 → 1~21장 전체(labcore 49 + 앱 12 = 61) → 22장 9개 초록 → 22장 수정 전 3개 빨강 → HTTP 계약(고정한 응답 본문) + 가짜 LLM 녹화 답 대조 → 평가 게이트 RED 43/50 → 평가 게이트 GREEN.
+
 ```bash
-pytest tests/attack tests/unit                      # 수정 후 → 49개 초록
-pytest tests/attack tests/unit --lab-target=before  # 수정 전 → 공격 테스트 23개 빨강
-pytest                                              # 1~21장 전체(labcore 49 + 앱 12 = 61)
-pytest -m capstone [--lab-target=before]            # 22장: 9개 초록 / 수정 전 3개 빨강
-pytest -m contract                                  # HTTP 계약(고정한 응답 본문) + 가짜 LLM 녹화 답 대조
-bash eval-kit/scripts/serve_and_run.sh full before,eval   # 평가 게이트 RED 43/50
-bash eval-kit/scripts/serve_and_run.sh full eval          # 평가 게이트 GREEN
+pytest tests/attack tests/unit
+pytest tests/attack tests/unit --lab-target=before
+pytest
+pytest -m capstone
+pytest -m capstone --lab-target=before
+pytest -m contract
+bash eval-kit/scripts/serve_and_run.sh full before,eval
+bash eval-kit/scripts/serve_and_run.sh full eval
 ```
 
 | 장 | 수정 전 | 수정 후 | 지키는 테스트 |
@@ -80,7 +85,7 @@ bash eval-kit/scripts/serve_and_run.sh full eval          # 평가 게이트 GRE
 
 ```bash
 read -s OPENAI_API_KEY && export OPENAI_API_KEY
-LAB_PROFILES=lmstudio LLM_MODEL=openai/gpt-oss-20b uvicorn shopbot.main:app --host 127.0.0.1 --port 8080
+LAB_PROFILES=lmstudio LLM_MODEL=openai/gpt-oss-20b python -m uvicorn shopbot.main:app --host 127.0.0.1 --port 8080
 ```
 
 - **`structured_output: "tool"`(`shopbot/profiles/lmstudio.yaml`).** 기본값 `provider`는 도구 목록과 `response_format`(json_schema)을 함께 보낸다. LM Studio 0.4.26에서는 이 조합에서 두 모델 모두 정상 질문 4개를 모두 거절했다(모델이 도구 호출 흉내·속생각을 JSON 안에 씀 → 형식 검사가 막음). `tool`이면 `ToolStrategy(BotReply)`로 최종 답을 "답 제출" 도구 호출로 받고, 모델이 글로 답하면 `reply_from_text`가 정확히 답 모양일 때만 받는다. 바꾼 뒤 gpt-oss-20b는 3개 중 0개 거절이었다. 상품 질문(RAG)도 같은 프로필에서 `bind_tools([GroundedAnswer], tool_choice="required")`로 받는다(LM Studio는 `tool_choice` 객체를 400으로 거절하고, json_schema 강제에서는 gpt-oss 답이 망가졌다).
