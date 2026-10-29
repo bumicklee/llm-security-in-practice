@@ -5,12 +5,14 @@
 - 마스킹을 메모리(체크포인터) 앞에 둬야 대화 기록에도 마스킹본만 남는다(11장).
 - 창 자르기를 예산 검사 앞에 둬야 예산이 "실제로 보내는" 입력을 본다(8장).
 출력 스키마(output_schema 스위치): ProviderStrategy(BotReply) = 모델에 response_format json_schema를 같이 보낸다.
+  structured_output: tool(lmstudio 프로필)이면 ToolStrategy(BotReply) = 최종 답을 "답 제출" 도구 호출로 받는다.
+  로컬 서버(LM Studio)는 도구 목록과 response_format을 함께 받으면 답을 JSON으로 강제해 도구 호출이 깨진다(2026-10-29 실측).
 끄면(before) 자유 글 그대로(UNKNOWN으로 감쌈).
 대화 메모리: InMemorySaver, thread_id = 로그인 사용자 ID.
 """
 from langchain.agents import create_agent
 from langchain.agents.middleware import ModelCallLimitMiddleware, ToolCallLimitMiddleware
-from langchain.agents.structured_output import ProviderStrategy
+from langchain.agents.structured_output import ProviderStrategy, ToolStrategy
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 
@@ -27,6 +29,12 @@ def build_checkpointer() -> InMemorySaver:
     return InMemorySaver(serde=serde)
 
 
+def _reply_format(s):
+    if not s.defense.output_schema:
+        return None
+    return ToolStrategy(BotReply) if s.structured_output == "tool" else ProviderStrategy(BotReply)
+
+
 def build_chat_agent(lab, model, tools, meter):
     s = lab.settings
     middleware = [TraceRecorderMiddleware()]
@@ -40,7 +48,7 @@ def build_chat_agent(lab, model, tools, meter):
         model, tools,
         system_prompt=SystemPrompts.AFTER if s.defense.secret_free_prompt else SystemPrompts.BEFORE,
         middleware=middleware,
-        response_format=ProviderStrategy(BotReply) if s.defense.output_schema else None,
+        response_format=_reply_format(s),
         context_schema=LabContext,
         checkpointer=lab.checkpointer,
     )

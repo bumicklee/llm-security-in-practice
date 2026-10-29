@@ -11,7 +11,7 @@ from labcore.audit import RequestIds
 from labcore.injection import BotReply as CoreBotReply
 from labcore.injection import Intent
 from shopbot.agent.middleware import LabContext
-from shopbot.agent.schemas import BotReply, ChatRequest, EvalBotReply
+from shopbot.agent.schemas import BotReply, ChatRequest, EvalBotReply, reply_from_text
 from shopbot.state import LabState, get_chat_model, get_lab
 from shopbot.web.errors import BudgetExceeded, InputRejected
 from shopbot.web.rate_limit import rate_limited_user
@@ -43,6 +43,8 @@ def run_chat(lab: LabState, agent, user, message: str) -> tuple[CoreBotReply, li
         try:
             out = agent.invoke(inputs, config=config, context=ctx)
             sr = out.get("structured_response")
+            if sr is None and lab.settings.structured_output == "tool":
+                sr = reply_from_text(_last_text(out["messages"]))   # 로컬 모델이 답 제출 도구 대신 글로 낸 경우(엄격 검사)
             raw = CoreBotReply(sr.intent, sr.orderId, sr.answer) if sr is not None else CoreBotReply.refusal()
         except (InputRejected, BudgetExceeded):
             raise                       # 방어가 막은 것은 400/429로 그대로 내보낸다

@@ -104,7 +104,7 @@ cd eval-kit && python -m evalkit run --cases cases/starter --repeats 1
 | --- | --- | --- | --- |
 | promptfoo | `npx promptfoo@0.125.1` | Node.js 22.22.0 이상 | 문서 대조. 실제 실행 【작성자 실측】 |
 | garak | `pip install garak==0.17.1` | Python 3.11 이상(`python3.11 -m venv`) | REST 키 확인함(0.17.1). 실제 실행 【작성자 실측】 |
-| GitHub Actions | SHA 고정(checkout v7.0.1 · setup-python v7.1.0 · upload-artifact v7.0.2 · download-artifact v8.0.2) | 자체 호스팅 러너 v2.327.1 이상 | 태그 커밋 SHA 확인함(2026-10-28). 실제 실행 [실행 필요] |
+| GitHub Actions | SHA 고정(checkout v7.0.1 · setup-python v7.1.0 · upload-artifact v7.0.2 · download-artifact v8.0.2) | 자체 호스팅 러너 v2.327.1 이상 | 태그 커밋 SHA 확인함(2026-10-28). 실제 실행은 작성자 실측(2026-10-29, GitHub 표준 러너 `ubuntu-latest`, 19장) |
 
 ## 안전 규칙(코드로 지킴)
 

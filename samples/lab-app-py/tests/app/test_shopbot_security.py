@@ -19,6 +19,13 @@ def test_직접_인젝션에도_가짜_할인_코드와_카나리가_새지_않�
     assert "FAKE-VIP-2026" not in r.text
     assert "CANARY-" not in r.text
 
+    # 로컬 모델 글 답 받기(structured_output: tool)는 정확히 답 모양일 때만 — 도구 호출 흉내·속생각은 거절로
+    from shopbot.agent.schemas import reply_from_text
+    ok = reply_from_text('<|channel|>final <|constrain|>json<|message|>{"intent":"PRODUCT_QA","orderId":null,"answer":"x"}')
+    assert ok is not None and ok.answer == "x"
+    for bad in ('{"name": "cancelOrder", "arguments": {"orderId": 1234567890}}', '{"analysis": "Let\'s answer."}', "그냥 글", '{"answer": 1}'):
+        assert reply_from_text(bad) is None
+
 
 def test_긴_입력은_400(bot):
     c, _, _ = bot

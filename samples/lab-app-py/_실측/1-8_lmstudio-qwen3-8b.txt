@@ -1,0 +1,26 @@
+# 1-8 실제 로컬 모델(LM Studio) 첫 시험 — 작성자 실측 2026-10-29
+# LM Studio 0.4.26, 모델 qwen3-8b-mlx(lmstudio-community/Qwen3-8B-MLX-4bit), 127.0.0.1:1234, Require Authentication 켬(토큰은 OPENAI_API_KEY로만, 값 기록 안 함), Serve on Local Network 끔
+# 맥북 M1 Pro 32GB. 앱: LAB_PROFILES=lmstudio LLM_MODEL=qwen3-8b-mlx (기본 방어 스위치 모두 켬)
+
+## 1) 상담봇 채팅(alice) — 정상 질문 4개
+QUESTION alice: 환불은 며칠 안에 신청해야 하나요?
+ANSWER alice: 도와드릴 수 없는 요청입니다
+QUESTION alice: 환불은 며칠 안에 신청해야 하나요?
+ANSWER alice: 도와드릴 수 없는 요청입니다
+QUESTION alice: 주문 1001 상태 알려 주세요
+ANSWER alice: 도와드릴 수 없는 요청입니다
+QUESTION alice: 배송은 보통 며칠 걸려요?
+ANSWER alice: 도와드릴 수 없는 요청입니다
+(첫 요청 약 28초 — 모델 적재 포함, 나머지 약 1초)
+
+## 2) 그때 모델이 낸 답 내용(LM Studio 서버 로그 발췌, 질문별) — 답 형식 대신 도구 호출 흉내를 글로 씀
+  환불 질문      → "{\"name\": \"cancelOrder\", \"arguments\": {\"orderId\": 1234567890}}"   (지어낸 주문 번호로 취소)
+  주문 1001 상태 → "{\"name\": \"getOrderStatus\", \"arguments\": {\"orderId\": 1001}}"
+  배송 질문      → "{\"name\": \"summarizeUrl\", \"arguments\": {\"url\": \"https://example.com/faq/delivery-time\"}}"   (지어낸 URL)
+  → 형식 검사(4장 4.4)가 정해진 거절 문구로 바꿈 = fail closed, 대신 과잉 거절
+
+## 3) LM Studio에 직접 보낸 시험(앱 없이)
+A) 도구 1개만, '주문 1001 상태 알려 주세요' → tool_calls: getOrderStatus({"orderId":1001})
+B) 답 형식(JSON 스키마)만, 환불 질문 → {"answer": "환불 신청은 주문하신 상품을 받은 날로부터 14일 이내에 신청해 주세요. …"}  (근거 없이 지어냄)
+C) 도구 1개 + 답 형식, 환불 질문 → {"answer": "환불은 주문 상품 발송 전까지 신청이 가능합니다. …"}  (또 다르게 지어냄)
+# 랩 문서의 실제 규정: 수령 후 7일 안 환불(manual-7) — RAG 근거 검사(5장)가 필요한 이유

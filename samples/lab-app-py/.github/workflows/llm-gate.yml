@@ -13,8 +13,12 @@
 #   checkout은 persist-credentials: false — 이 워크플로는 저장소에 쓰지 않으므로 토큰을 git 자격 증명으로 남기지 않는다
 #   (checkout v6부터는 .git/config가 아니라 $RUNNER_TEMP 아래 별도 파일에 둔다. 이 설정이면 그 파일도 만들지 않는다).
 #   GH_TOKEN은 그것을 쓰는 단계(기준선 찾기)의 env에만 둔다. 잡 전체에 두면 시험 대상 앱·가짜 LLM·evalkit도 토큰을 읽는다.
-# 실제 Actions 실행은 [실행 필요]. 로컬에서는 YAML 파싱·run 블록 bash -n·SHA 고정 검사(_실측/12-2_workflow-yaml-check.txt)와
-#   두 잡의 명령을 그대로 흉내 낸 PR 시뮬레이션(_실측/12-4_pr-simulation.txt)만 했다.
+# 실제 Actions 실행: 작성자 실측(2026-10-29, GitHub 표준 러너 ubuntu-latest). 공개 저장소 bumicklee/llm-security-in-practice는 랩이
+#   samples/lab-app-py/ 아래에 있어 맨 위 .github/workflows/llm-gate.yml(_tools/make_root_workflow.py로 만든 사본, 작업 폴더 samples/lab-app-py)로 돈다.
+#   main push(full, 50개 통과) 전체 1m 25s · eval-gate 1m 14s · pytest 36~44s: https://github.com/bumicklee/llm-security-in-practice/actions/runs/40807536475
+#   PR(quick) 전체 55s · eval-gate 37~44s · pytest 22~32s. PR 보고서가 main 실행(20261029-023932)을 기준선으로 받아 비교했고,
+#   llm-gate 필수 상태 검사로 빨간 PR의 Merge 버튼이 잠겼다(시연 PR #1~#3은 닫음). 로컬 검사도 그대로 둔다: YAML 파싱·run 블록 bash -n·
+#   SHA 고정 검사(_실측/12-2_workflow-yaml-check.txt), 두 잡의 명령을 그대로 흉내 낸 PR 시뮬레이션(_실측/12-4_pr-simulation.txt).
 name: llm-gate
 
 on:

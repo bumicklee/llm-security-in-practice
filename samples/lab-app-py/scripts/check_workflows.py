@@ -3,7 +3,7 @@
 이름·트리거·권한·잡·needs·쓰는 액션 목록을 보이고, 각 run 블록을 bash -n으로 문법 검사한다.
 공급망 점검 두 가지도 한다(2차 교차 검증 A18): 모든 uses가 40자리 커밋 SHA로 고정됐는가, checkout에 persist-credentials: false가 있는가.
 실행(lab-app-py 폴더, .venv 켠 상태): python scripts/check_workflows.py .github/workflows/llm-gate.yml eval-kit/ci/llm-gate-selfhosted.yml
-실제 GitHub Actions 실행은 이것으로 대신할 수 없다([실행 필요]).
+실제 GitHub Actions 실행은 이것으로 대신할 수 없다(실제 실행은 작성자 실측 2026-10-29, 19장 19.2·부록 J #9).
 """
 import re
 import subprocess

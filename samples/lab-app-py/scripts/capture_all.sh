@@ -723,6 +723,15 @@ for n in range(1, 51):
 }
 # === 섹션 2~4 블록 끝 ===
 
+# === 작성자 실측(LM Studio, 2026-10-29) — 이 스크립트의 단계가 아니다(자동으로 다시 만들지 않음) ===
+#   LM Studio 0.4.26 · openai/gpt-oss-20b · qwen3-8b-mlx · 127.0.0.1:1234 · Require Authentication 켬(토큰은 OPENAI_API_KEY로만, 값은 기록하지 않음)
+#   작성자가 직접 재서 손으로 옮긴 파일이라 위 "손으로 고치지 않는다" 규칙의 예외다. 다시 잴 때만 통째로 바꾼다:
+#     _실측/1-8_lmstudio-qwen3-8b.txt   _실측/1-8_lmstudio-gptoss-20b.txt   _실측/3-6_lmstudio-gptoss-tenant.txt
+#     _실측/4-4_lmstudio-max-tokens.txt _실측/5-1_lmstudio-gptoss-cancel.txt _실측/5-5_lmstudio-gptoss-ssrf.txt
+#     _실측/11-3_lmstudio-gptoss-gate.txt
+#   앱: LAB_PROFILES=lmstudio(,before)(,eval) LLM_MODEL=<LM Studio 모델 ID> · 게이트는 shop-bot-py.yaml에서 timeout_s만 늘린 사본(교재 2.4·17.5)
+# === 작성자 실측 블록 끝 ===
+
 PHASES="${*:-static llm after before eval evalbefore wobble other gaps}"
 for p in $PHASES; do
   case "$p" in
