@@ -1,0 +1,63 @@
+# 대시보드 네 칸(그림 21-1)의 숫자 — 랩 실측 2026-10-30 · 가짜 LLM. 빠른 묶음(quick) 21개 + 짧은 수동 세션 뒤 한 앱 프로세스의 값(21장 21.1, 수업 13-4 s3)
+# 실행 시각: 2026-10-30 09:12:01(quick 시작)~09:12:30 KST · 위치: samples/lab-app-py · macOS · 모든 값은 가짜, 127.0.0.1만
+# 만든 것: 클로드 코드(Claude Opus 5.5) 작업 에이전트. 다른 작업이 8080·8082를 쓰고 있어 포트만 바꿔 띄움: 앱 127.0.0.1:8190 · 관리 앱 8192 · 가짜 관리 페이지 8191 · 가짜 LLM 8170(FAKE_LLM_PORT)
+# 설정: load_settings("eval", llm_base_url=…:8170/v1, mgmt_port=8192, admin_page_port=8191, rate_limit_per_minute=10) — eval 프로필 + 레이트 리밋만 기본값(분당 10)으로 되돌림. 방어 스위치 11개 모두 켬(수정 후)
+# 평가 키트: python -m evalkit run --suite quick --gate --target <포트만 바꾼 shop-bot-py.yaml> --out <임시 폴더> → 21개 중 0개 실패, 0개 보류 · 요청 129회 · 게이트 GREEN (results/latest는 건드리지 않음)
+# 주의: 랩 앱은 HTTP 상태 코드별 카운터가 없고, 관리 앱(uvicorn log_level=warning)이 uvicorn 접속 로그도 끈다(아래 ACCESS 명령 출력 빈 줄, .lab-run/app.log도 0줄). 그래서 429·400 수는 수동 세션에서 curl이 받은 코드로 셌다. 차단 수 카운터는 직접 붙일 것(교재 21.1)
+# 감사 로그 명령은 앱 표준 로그(로거 shopbot.audit, JSON 한 줄씩)를 센다. 질문·답 칸(detail)은 출력하지 않는다
+## A. 빠른 묶음(quick) 21개 직후
+$ curl -s -u alice:FAKE-pass-0000 http://127.0.0.1:8192/metrics | grep -E '^lab_llm_(tokens|cost_krw)_total'
+lab_llm_tokens_total{kind="input",user="alice"} 6177.0
+lab_llm_tokens_total{kind="output",user="alice"} 2432.0
+lab_llm_tokens_total{kind="input",user="bob"} 2607.0
+lab_llm_tokens_total{kind="output",user="bob"} 993.0
+lab_llm_cost_krw_total{user="alice"} 134.72999999999993
+lab_llm_cost_krw_total{user="bob"} 55.86
+[종료 코드 0]
+$ curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8190/api/lab/suspicious | python3 -c "import json,sys,collections; d=json.load(sys.stdin); print('의심 입력', len(d), '건 · 사유별', dict(collections.Counter(e['reason'] for e in d)), '· 사용자별', dict(collections.Counter(e['userId'] for e in d)))"
+의심 입력 0 건 · 사유별 {} · 사용자별 {}
+[종료 코드 0]
+$ grep ' shopbot.audit ' <임시 폴더>/app.log | sed 's/^.* shopbot.audit //' | python3 -c "import json,sys,collections; ev=[json.loads(l) for l in sys.stdin if l.startswith('{')]; c=collections.Counter(e['type'] for e in ev); print('감사 로그', len(ev), '줄 · TOOL_DENIED', c['TOOL_DENIED'], '· REJECTED', c['REJECTED'], '· APPROVED', c['APPROVED'], '· PROPOSED', c['PROPOSED']); print('TOOL_DENIED 사용자별', dict(collections.Counter(e['actor'] for e in ev if e['type']=='TOOL_DENIED')))"
+감사 로그 144 줄 · TOOL_DENIED 6 · REJECTED 0 · APPROVED 0 · PROPOSED 9
+TOOL_DENIED 사용자별 {'alice': 3, 'bob': 3}
+[종료 코드 0]
+$ grep -oE '"POST /api/(chat|products/ask) HTTP/1.1" [0-9]{3}' <임시 폴더>/app.log | awk '{print $NF}' | sort | uniq -c
+[종료 코드 0]
+## B. 짧은 수동 세션
+$ curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message":"주문 1001 취소해 줘"}' http://127.0.0.1:8190/api/chat; echo
+{"intent":"CANCEL_REQUEST","orderId":"1001","answer":"처리 결과: 주문 1001을 취소할까요? [승인] [거절]","trace":{"request_id":"req-c4495975","tool_calls":[{"name":"cancelOrder","arguments":{"orderId":"1001"},"status":"PROPOSED"}]}}
+[종료 코드 0]
+$ ID=$(curl -s -u alice:FAKE-pass-0000 http://127.0.0.1:8190/api/approvals | python3 -c "import json,sys; print(json.load(sys.stdin)[0]['id'])"); curl -s -u alice:FAKE-pass-0000 -X POST http://127.0.0.1:8190/api/approvals/$ID/reject; echo
+{"ok":true,"message":"취소 요청을 거절했습니다","pendingActionId":null}
+[종료 코드 0]
+$ python3 -c "import json; print(json.dumps({'message': '배송 문의 ' + '가' * 1200}, ensure_ascii=False))" > <임시 폴더>/long.json; curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d @<임시 폴더>/long.json -w ' HTTP %{http_code}\n' http://127.0.0.1:8190/api/chat | sed -E 's/"answer":"[^"]*"/"answer":"…"/'
+{"error":"INPUT_REJECTED","reason":"TOO_LONG","answer":"…"} HTTP 400
+[종료 코드 0]
+$ for i in $(seq 1 15); do curl -s -u bob:FAKE-pass-0000 -H 'Content-Type: application/json' -d "{\"message\":\"배송 문의 $i\"}" -o <임시 폴더>/last.json -w '%{http_code}\n' http://127.0.0.1:8190/api/chat; done | uniq -c; cat <임시 폴더>/last.json; echo
+  10 200
+   5 429
+{"error":"RATE_LIMITED","retryAfterSeconds":5}
+[종료 코드 0]
+## C. 세션 끝 — 대시보드 네 칸에 넣을 값
+$ curl -s -u alice:FAKE-pass-0000 http://127.0.0.1:8192/metrics | grep -E '^lab_llm_(tokens|cost_krw)_total'
+lab_llm_tokens_total{kind="input",user="alice"} 6332.0
+lab_llm_tokens_total{kind="output",user="alice"} 2474.0
+lab_llm_tokens_total{kind="input",user="bob"} 5217.0
+lab_llm_tokens_total{kind="output",user="bob"} 1273.0
+lab_llm_cost_krw_total{user="alice"} 137.53999999999994
+lab_llm_cost_krw_total{user="bob"} 90.36000000000001
+[종료 코드 0]
+$ curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8190/api/lab/suspicious | python3 -c "import json,sys,collections; d=json.load(sys.stdin); print('의심 입력', len(d), '건 · 사유별', dict(collections.Counter(e['reason'] for e in d)), '· 사용자별', dict(collections.Counter(e['userId'] for e in d)))"
+의심 입력 1 건 · 사유별 {'TOO_LONG': 1} · 사용자별 {'alice': 1}
+[종료 코드 0]
+$ grep ' shopbot.audit ' <임시 폴더>/app.log | sed 's/^.* shopbot.audit //' | python3 -c "import json,sys,collections; ev=[json.loads(l) for l in sys.stdin if l.startswith('{')]; c=collections.Counter(e['type'] for e in ev); print('감사 로그', len(ev), '줄 · TOOL_DENIED', c['TOOL_DENIED'], '· REJECTED', c['REJECTED'], '· APPROVED', c['APPROVED'], '· PROPOSED', c['PROPOSED']); print('TOOL_DENIED 사용자별', dict(collections.Counter(e['actor'] for e in ev if e['type']=='TOOL_DENIED')))"
+감사 로그 169 줄 · TOOL_DENIED 6 · REJECTED 1 · APPROVED 0 · PROPOSED 10
+TOOL_DENIED 사용자별 {'alice': 3, 'bob': 3}
+[종료 코드 0]
+$ grep -oE '"POST /api/(chat|products/ask) HTTP/1.1" [0-9]{3}' <임시 폴더>/app.log | awk '{print $NF}' | sort | uniq -c
+[종료 코드 0]
+## 대시보드 네 칸(세션 끝 값)
+1. 오늘 토큰: 입력 11,549 · 출력 3,747(alice 6,332+2,474 · bob 5,217+1,273) · 예상 요금 227.90원(가짜 단가, alice 137.54 · bob 90.36)
+2. 429 · 400: 429 RATE_LIMITED 5(bob 15번 중) · 429 TOKEN_BUDGET 0 · 400 INPUT_REJECTED 1(alice, TOO_LONG) — 수동 세션 curl 기준. quick 129회는 상태 코드를 남기지 않음
+3. 의심 입력 사유별: TOO_LONG 1(alice) — 원문 칸 없음. quick 21개 직후에는 0건
+4. 도구 거부 · 승인 거절: TOOL_DENIED 6(alice 3 · bob 3, 모두 quick의 권한 시험) · REJECTED 1(alice 수동 세션)
