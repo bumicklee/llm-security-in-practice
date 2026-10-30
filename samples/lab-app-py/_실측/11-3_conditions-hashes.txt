@@ -1,0 +1,22 @@
+# 11-3 s8 측정 조건 양식의 남은 칸(양자화 · 잠금 해시 · 프롬프트 해시) — 작성자 실측 2026-10-30
+# 맥북 M1 Pro 32GB · macOS 26.6.2 · Python 3.14.6 · LM Studio 0.4.26(127.0.0.1:1234, 인증 켬 — 토큰은 환경 변수로만, 값 기록 안 함)
+
+## 양자화 — LM Studio /api/v0/models(모델 목록 API, 2026-10-30 09:48)
+$ curl -s -H "Authorization: Bearer $LM_TOKEN" http://127.0.0.1:1234/api/v0/models   (id · arch · compatibility_type · quantization만 발췌)
+   openai/gpt-oss-20b · gpt_oss · mlx · MXFP4 · 최대 문맥 131072
+   qwen3-8b-mlx · qwen3 · mlx · 4bit · 최대 문맥 40960
+  모델 파일(디스크): openai/gpt-oss-20b = mlx-community/gpt-oss-20b-MXFP4-Q8(config.json quantization: 전문가 가중치 mxfp4 4비트 · group 32, 어텐션 · 임베딩 · lm_head 8비트 affine · group 64), 약 11GB
+                    qwen3-8b-mlx = lmstudio-community/Qwen3-8B-MLX-4bit(4비트 · group 64), 약 4.3GB
+
+## 라이브러리 잠금 — requirements.lock (파일 수정 2026-10-28 07:28 → 10-29 quick · 10-30 full 측정 모두 같은 파일)
+$ shasum -a 256 requirements.lock
+55617653ae7146c679cc34193e7a9ab7ba4e63a0d553a90c6f8310e91f212845  requirements.lock
+langchain==1.4.7
+langchain-openai==1.7.3
+langgraph==1.2.18
+openai==3.40.0
+
+## 시스템 프롬프트 — SystemPrompts.AFTER 내용 해시(UTF-8 sha256, 11장 PromptLogPolicy.safe와 같은 셈법 · 양식에는 앞 12자리)
+$ python -c 'import hashlib; from labcore.injection import SystemPrompts as P; s=P.AFTER; print(hashlib.sha256(s.encode()).hexdigest(), len(s))'
+82bdd87e500ca9811428925fd7db486539aba23ae70a3ee0515d8f6489ba26e0 203
+  (labcore/injection/__init__.py 수정 2026-10-28 20:00 — 10-29 · 10-30 측정과 같은 프롬프트. 프롬프트 원문은 이 파일에 적지 않음)

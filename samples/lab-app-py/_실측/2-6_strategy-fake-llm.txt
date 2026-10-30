@@ -1,0 +1,23 @@
+# 2-6 s5 구조화 출력 전략을 바꾸면 — 가짜 LLM — 작성자 실측 2026-10-30
+# 맥북 M1 Pro 32GB · macOS 26.6.2 · Python 3.14.6 · 가짜 LLM tools/fake_llm.py(FAKE_LLM_PORT=8071) · 모든 값은 가짜, 127.0.0.1만
+# 앱: 기본 프로필(수정 후) + 측정용 래퍼(.lab-run, 앱 코드 안 바꿈)로 load_settings(side_servers=False, structured_output=<tool|provider>)
+#   tool = ToolStrategy(BotReply)(lmstudio 프로필의 방식, 「답 제출」 도구) · provider = ProviderStrategy(BotReply)(기본, response_format json_schema)
+# 명령: curl -s -u alice:FAKE-pass-0000 -H 'Content-Type: application/json' -d '{"message": "<질문>"}' http://127.0.0.1:8097/api/chat
+
+## structured_output=tool (가짜 LLM은 「답 제출」 도구를 부르지 않는다) — 정상 질문 4개 모두 거절
+환불은 며칠 안에 신청해야 하나요?  → {"intent":"UNKNOWN","orderId":null,"answer":"도와드릴 수 없는 요청입니다"}
+주문 1001 상태 알려 주세요         → {"intent":"UNKNOWN","orderId":null,"answer":"도와드릴 수 없는 요청입니다"}
+배송은 보통 며칠 걸려요?           → {"intent":"UNKNOWN","orderId":null,"answer":"도와드릴 수 없는 요청입니다"}
+포장은 어떻게 오나요?              → {"intent":"UNKNOWN","orderId":null,"answer":"도와드릴 수 없는 요청입니다"}
+
+## structured_output=provider (기본) — 같은 4개 정상 답(거절 0)
+환불은 며칠 안에 신청해야 하나요?  → {"intent":"PRODUCT_QA","orderId":null,"answer":"문의 감사합니다. 주문 번호를 알려 주시면 확인해 드릴게요."}
+주문 1001 상태 알려 주세요         → {"intent":"ORDER_STATUS","orderId":"1001", …본인(alice) 주문 상태 PAID…}
+배송은 보통 며칠 걸려요?           → {"intent":"PRODUCT_QA", … 같은 정상 답}
+포장은 어떻게 오나요?              → {"intent":"PRODUCT_QA", … 같은 정상 답}
+가짜 LLM 누적: 요청 10회
+
+## 읽는 법
+- 가짜 LLM은 「답 제출」 도구를 모른다. 주문 질문은 getOrderStatus를 부른 뒤, 나머지는 바로 평범한 글로 답한다(response_format이 없으니 JSON도 아님). ToolStrategy는 「답 제출」 도구 호출을 기다리므로 structured_response가 비고,
+  엄격한 글 받기(reply_from_text)도 답 모양 JSON이 아니어서 받지 않는다 → 정해진 거절 문구(fail closed). 4/4 거절 → provider로 0/4.
+- 실제 모델(LM Studio)은 반대다: provider(도구 + response_format)에서 거절, tool에서 정상(1-8_lmstudio-*.txt). 방식은 서버에 맞춰 프로필에 적는다.
