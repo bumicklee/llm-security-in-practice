@@ -1,4 +1,4 @@
-"""22장 할 일 #4의 단위 확인(수정 후 구현만). --lab-target=before에서도 초록이다
+"""22장 할 일 #4의 단위 확인(수정 후 구현만). --lab-target=before에서도 그린이다
 (공격 테스트가 아니라 부품 확인). 실행: pytest -m capstone"""
 import pytest
 

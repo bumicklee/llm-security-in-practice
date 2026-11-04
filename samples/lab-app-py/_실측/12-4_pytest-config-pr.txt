@@ -1,4 +1,4 @@
-# 빨간불 ①의 설정 PR(default.yaml에서 secret_free_prompt·output_schema를 false로)을 pytest 잡에 넣으면: 앱 테스트가 잡는다. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)
+# 레드 ①의 설정 PR(default.yaml에서 secret_free_prompt·output_schema를 false로)을 pytest 잡에 넣으면: 앱 테스트가 잡는다. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)
 # 실행 시각: 2026-10-28 22:19:57 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
 $ cp shopbot/profiles/default.yaml .lab-run/default.yaml.orig && sed -i.bak 's/  secret_free_prompt: true/  secret_free_prompt: false/; s/  output_schema: true/  output_schema: false/' shopbot/profiles/default.yaml && rm -f shopbot/profiles/default.yaml.bak && grep -nE 'secret_free_prompt:|output_schema:' shopbot/profiles/default.yaml
 25:  secret_free_prompt: false

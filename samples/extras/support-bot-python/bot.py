@@ -7,7 +7,7 @@
     → 스텁 결과는 '장치가 동작한다'는 증거일 뿐, 어떤 실제 모델의 강약도 뜻하지 않는다.
   - OpenAICompatBot: LM Studio 같은 OpenAI 호환 주소(/v1/chat/completions)로 모델을 부른다.
     도구 호출(tool_calls)을 최대 3번까지 처리한다. (실행 확인 필요: 모델·서버마다 도구 호출 지원이 다르다)
-대응 장: 2장(2.2), 4~7장(시험 대상), 10장(흔들림 재현: STUB_SEED + X-Eval-Repeat)
+대응 장: 2장(2.2), 4~7장(시험 대상), 10장(확률형 응답 재현: STUB_SEED + X-Eval-Repeat)
 """
 import hashlib
 import json
@@ -93,7 +93,7 @@ class StubBot:
             if "AUTHZ" in self.rates and GUARDS["TOOL"] not in prompt:
                 self.rates["AUTHZ"] = PROFILES["v2"]["AUTHZ"]
 
-    # 같은 (씨앗, 키, 반복 번호)면 같은 결과 → 흔들림을 '재현 가능하게' 흉내 낸다
+    # 같은 (시드, 키, 반복 번호)면 같은 결과 → 확률형 응답을 '재현 가능하게' 흉내 낸다
     def _roll(self, category, key, repeat):
         rate = self.rates.get(category, 0.0)
         if rate >= 1.0:

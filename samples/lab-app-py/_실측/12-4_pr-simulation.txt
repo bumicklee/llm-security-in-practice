@@ -1,4 +1,4 @@
-# PR 시뮬레이션(19장 19.7, 수업 12-4): 파일을 잠깐 바꾸고 llm-gate.yml 세 잡(pytest · eval-gate · llm-gate)의 명령을 그대로 → 되돌림. eval-gate는 needs가 없어 pytest가 빨개져도 돈다. ① 프롬프트·설정 PR(default.yaml 두 줄) ② 방어 코드 PR(cancel_order 한 줄) ③ 아무것도 안 바꾼 PR(기준)
+# PR 시뮬레이션(19장 19.7, 수업 12-4): 파일을 잠깐 바꾸고 llm-gate.yml 세 잡(pytest · eval-gate · llm-gate)의 명령을 그대로 → 되돌림. eval-gate는 needs가 없어 pytest가 레드가 돼도 돈다. ① 프롬프트·설정 PR(default.yaml 두 줄) ② 방어 코드 PR(cancel_order 한 줄) ③ 아무것도 안 바꾼 PR(기준)
 # 실행 시각: 2026-10-28 10:26:40 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
 $ bash scripts/simulate_pr.sh prompt
 PR ①(프롬프트·설정): shopbot/profiles/default.yaml
@@ -51,7 +51,7 @@ PR ①(프롬프트·설정): shopbot/profiles/default.yaml
   → eval-gate: failure
 
 [잡 llm-gate] pytest=failure eval-gate=failure
-llm-gate: RED — 머지 불가(빨간 층의 로그를 본다)
+llm-gate: RED — 머지 불가(레드 층의 로그를 본다)
 되돌림: shopbot/profiles/default.yaml
 [종료 코드 1]
 $ bash scripts/simulate_pr.sh code
@@ -103,7 +103,7 @@ PR ②(방어 코드): labcore/tools/__init__.py
   → eval-gate: success
 
 [잡 llm-gate] pytest=failure eval-gate=success
-llm-gate: RED — 머지 불가(빨간 층의 로그를 본다)
+llm-gate: RED — 머지 불가(레드 층의 로그를 본다)
 되돌림: labcore/tools/__init__.py
 [종료 코드 1]
 $ bash scripts/simulate_pr.sh none

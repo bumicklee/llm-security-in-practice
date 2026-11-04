@@ -1,4 +1,4 @@
-# 빨간불 ①을 평가 게이트가 잡는 경우: 프롬프트를 되돌리고 출력 검사까지 끈 PR — LAB_DEFENSE_OFF=secret_free_prompt,output_schema(19장, 수업 12-4). quick → full
+# 레드 ①을 평가 게이트가 잡는 경우: 프롬프트를 되돌리고 출력 검사까지 끈 PR — LAB_DEFENSE_OFF=secret_free_prompt,output_schema(19장, 수업 12-4). quick → full
 # 실행 시각: 2026-10-28 09:17:57 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
 $ curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/flags; echo
 {"secretFreePrompt":false,"inputGuard":true,"outputSchema":false,"ragGuard":true,"tenantFilter":true,"rateLimit":true,"tokenBudget":true,"toolAuthz":true,"ssrfGuard":true,"outputEscape":true,"piiMask":true}

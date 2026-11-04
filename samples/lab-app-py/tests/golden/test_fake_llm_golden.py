@@ -1,6 +1,6 @@
 """가짜 LLM 녹화 답 대조 시험(설계 2.5, -m contract). 녹화해 둔 요청·응답 쌍을 가짜 LLM(tools/fake_llm.py)에 다시 보낸다.
 
-가짜 LLM의 규칙을 고치다가 답이 몰래 바뀌면(수업 화면·_실측과 어긋나면) 이 시험이 빨개진다.
+가짜 LLM의 규칙을 고치다가 답이 몰래 바뀌면(수업 화면·_실측과 어긋나면) 이 시험이 레드가 된다.
 비교: 상태 코드 + JSON 본문(id·created 제외, /usage의 perSecond 제외). JSON이 아니면 글자 그대로.
 녹화: scripts/record_fake_llm_golden.py(규칙을 일부러 바꾼 뒤에만 다시 녹화한다).
 실행: pytest -m contract tests/golden -v
@@ -98,7 +98,7 @@ def test_가짜_LLM은_녹화해_둔_답과_같은_답을_낸다(py_server):
     assert diffs == []
 
 
-def test_흔들림_모드는_같은_씨앗이면_같은_순서를_낸다():
+def test_확률형_모드는_같은_시드면_같은_순서를_낸다():
     def run():
         p, base = _start({"FAKE_LLM_WOBBLE": "0.5", "FAKE_LLM_SEED": "42"})
         try:

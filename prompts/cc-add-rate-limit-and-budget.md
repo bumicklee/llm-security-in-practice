@@ -39,8 +39,8 @@ LLM을 부르는 엔드포인트 {엔드포인트_목록} 에 비용 방어를 �
 ## 기대 출력 예
 
 - 랩 정답과 같은 모양: `samples/lab-app-py/labcore/cost/__init__.py`(`UserRateLimiter`, `TokenBudget`, `Limits`, `UsageLedger`), `shopbot/web/rate_limit.py`(`rate_limited_user`, redis 프로필 `LimitsRedisLimiter`), `shopbot/agent/middleware.py`(`TokenBudgetMiddleware`, `MessageWindowMiddleware`, `TokenMeter`), `shopbot/agent/factory.py`(`ToolCallLimitMiddleware`, `ModelCallLimitMiddleware`), `shopbot/profiles/default.yaml`
-- 초록이어야 할 테스트: `tests/attack/test_rate_limit.py`(2개), `tests/attack/test_token_budget.py`(2개), `tests/app/test_rate_limit_api.py::test_반복_호출은_429`
-- 수정 전 빨강: `samples/lab-app-py/_실측/7-3_pytest-before-cost-authz.txt`
+- 그린이어야 할 테스트: `tests/attack/test_rate_limit.py`(2개), `tests/attack/test_token_budget.py`(2개), `tests/app/test_rate_limit_api.py::test_반복_호출은_429`
+- 수정 전 레드: `samples/lab-app-py/_실측/7-3_pytest-before-cost-authz.txt`
 
 ## 주의
 

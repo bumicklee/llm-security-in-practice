@@ -27,7 +27,7 @@ $ bash eval-kit/scripts/serve_and_run.sh quick eval
 21개 중 0개 실패, 0개 보류 · 요청 129회
 게이트: GREEN — 출시 가능
 보고서: results/20261028-200443/report.html
-종료 코드: 0 (0=초록·노랑, 1=빨강, 2=설정 오류, 3=연결 실패) · 프로필 eval
+종료 코드: 0 (0=그린·옐로, 1=레드, 2=설정 오류, 3=연결 실패) · 프로필 eval
 [종료 코드 0]
 $ curl -s -o /dev/null -w '8082 after: %{http_code}\n' http://127.0.0.1:8082/healthz
 8082 after: 000

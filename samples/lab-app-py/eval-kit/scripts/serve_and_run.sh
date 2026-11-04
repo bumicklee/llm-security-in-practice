@@ -55,5 +55,5 @@ else
   "$PY" -m evalkit run --target targets/shop-bot-py.yaml --suite "$SUITE" --judge-mode "$JUDGE" --gate
 fi
 CODE=$?
-echo "종료 코드: $CODE (0=초록·노랑, 1=빨강, 2=설정 오류, 3=연결 실패) · 프로필 $PROFILE"
+echo "종료 코드: $CODE (0=그린·옐로, 1=레드, 2=설정 오류, 3=연결 실패) · 프로필 $PROFILE"
 exit $CODE

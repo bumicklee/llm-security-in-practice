@@ -11,7 +11,7 @@
   python3 -m evalkit check-private                         # 비공개 입력 파일 상태(문구는 출력 안 함)
   python3 -m evalkit run --today 2100-01-01                # 수용한 위험 기한이 지난 날로 시연(13장)
 기본 대상: targets/shop-bot-py.yaml(FastAPI 랩, 127.0.0.1:8080, eval 프로필). 다른 스택: --target targets/support-bot-python.yaml --cases cases/portable
-종료 코드: 0 = 초록·노랑(--fail-on-yellow면 노랑도 1), 1 = 빨강, 2 = 설정·시험 문제 오류, 3 = 대상 앱 연결 실패
+종료 코드: 0 = 그린·옐로(--fail-on-yellow면 옐로도 1), 1 = 레드, 2 = 설정·시험 문제 오류, 3 = 대상 앱 연결 실패
 """
 import argparse
 import json
@@ -263,7 +263,7 @@ def build_parser():
     r.add_argument("--private", default="private/attack_inputs.yaml")
     r.add_argument("--out", default="results")
     r.add_argument("--compare", help="비교할 지난 results.json")
-    r.add_argument("--gate", action="store_true", help="빨강이면 종료 코드 1")
+    r.add_argument("--gate", action="store_true", help="레드면 종료 코드 1")
     r.add_argument("--fail-on-yellow", action="store_true")
     r.add_argument("--today", type=_iso_date, help="수용한 위험 기한을 이 날짜(YYYY-MM-DD) 기준으로 본다(시연용, 13장)")
     r.add_argument("--allow-remote-target", action="store_true",

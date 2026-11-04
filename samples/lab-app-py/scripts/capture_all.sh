@@ -124,12 +124,12 @@ phase_static() {
   rec 12-4_pytest-before "pytest — 방어 코드를 수정 전 구현으로 바꾼 경우(labcore --lab-target=before). 12-4 '방어 코드를 지운 PR'을 pytest 잡이 잡는 장면" . \
     "pytest tests/attack tests/unit --lab-target=before -q --tb=no 2>&1 | grep -E 'FAILED|passed|failed'"
   local yml=shopbot/profiles/default.yaml
-  rec 12-4_pytest-config-pr "빨간불 ①의 설정 PR(default.yaml에서 secret_free_prompt·output_schema를 false로)을 pytest 잡에 넣으면: 앱 테스트가 잡는다. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)" . \
+  rec 12-4_pytest-config-pr "레드 ①의 설정 PR(default.yaml에서 secret_free_prompt·output_schema를 false로)을 pytest 잡에 넣으면: 앱 테스트가 잡는다. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)" . \
     "cp $yml .lab-run/default.yaml.orig && sed -i.bak 's/  secret_free_prompt: true/  secret_free_prompt: false/; s/  output_schema: true/  output_schema: false/' $yml && rm -f $yml.bak && grep -nE 'secret_free_prompt:|output_schema:' $yml" \
     "pytest tests/attack tests/unit tests/app -q --tb=no 2>&1 | grep -E 'FAILED|passed|failed'" \
     "cp .lab-run/default.yaml.orig $yml && grep -nE 'secret_free_prompt:|output_schema:' $yml"
   local tool=labcore/tools/__init__.py
-  rec 12-4_pytest-filter-deleted "빨간불 ②: AuthorizedOrderTools.cancel_order의 소유권 확인 줄을 지운 PR을 로컬에서. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)" . \
+  rec 12-4_pytest-filter-deleted "레드 ②: AuthorizedOrderTools.cancel_order의 소유권 확인 줄을 지운 PR을 로컬에서. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)" . \
     "cp $tool .lab-run/tools.py.orig && python -c \"
 p='$tool'; s=open(p).read()
 old='''        o = self._owned(user, order_id)
@@ -144,7 +144,7 @@ assert old in s; open(p,'w').write(s.replace(old, new)); print('cancel_order의 
     "pytest tests/attack tests/unit tests/app -q --tb=no 2>&1 | grep -E 'FAILED|passed|failed'"
   rec 14-3_pytest-capstone_after "22장 종합 실습 pytest — 수정 후(-m capstone). labcore 7개(CouponToolTest 2 + ApprovalSeparationTest 5) + FastAPI 연결 2개" . \
     "pytest -m capstone -v 2>&1 | grep -E 'PASSED|FAILED|passed|failed'"
-  rec 14-3_pytest-capstone_before "22장 종합 실습 pytest — 수정 전(-m capstone --lab-target=before). 쿠폰 도구 테스트 2개가 빨강(labcore), FastAPI 연결 1개도 빨강" . \
+  rec 14-3_pytest-capstone_before "22장 종합 실습 pytest — 수정 전(-m capstone --lab-target=before). 쿠폰 도구 테스트 2개가 레드(labcore), FastAPI 연결 1개도 레드" . \
     "pytest -m capstone --lab-target=before -v --tb=short 2>&1 | grep -E 'PASSED|FAILED|^E +AssertionError|passed|failed'"
   rec 4-5_retry-grep "내 프로젝트의 곱하기 찾기: 설정·코드의 재시도 층(7장 7.4, 수업 4-5). openai SDK 기본 2(시도 3번) × 앞단 3 = 9번 → max_retries=1이면 6번" . \
     "grep -rn --include='*.py' --include='*.yaml' -E 'max_retries|retries|Retry' shopbot/" \
@@ -204,7 +204,7 @@ print('채점관도 쓰는 시험', len(j), '/ 규칙만', len(cs)-len(j))\"" \
     "bash eval-kit/scripts/check.sh" \
     "if [ -d ../extras/support-bot-python ]; then (cd ../extras/support-bot-python && python -m unittest discover -s tests 2>&1 | tail -3); else echo 'support-bot-python 없음(랩만 있는 저장소) → 건너뜀'; fi" \
     "python -I scripts/check-attack-ids.py"
-  rec 13-4_reg-051_gate "REG-051을 게이트에 넣기: cases/regression/에 복사 → validate 51개 → 키트 개수 테스트가 빨강(의도한 신호) → 이 랩 저장소에서는 다시 지운다(21장, 수업 13-4). 앱 없이 돈다" eval-kit \
+  rec 13-4_reg-051_gate "REG-051을 게이트에 넣기: cases/regression/에 복사 → validate 51개 → 키트 개수 테스트가 레드(의도한 신호) → 이 랩 저장소에서는 다시 지운다(21장, 수업 13-4). 앱 없이 돈다" eval-kit \
     "mkdir -p cases/regression && cp examples/case-51-regression.yaml cases/regression/reg-051.yaml" \
     "python -m evalkit validate cases" \
     "python -m unittest discover -s tests 2>&1 | grep -E '^FAIL|AssertionError|^Ran|^FAILED|^OK'" \
@@ -229,7 +229,7 @@ phase_llm() {
     "curl -s -X POST 'http://127.0.0.1:8070/lab/fail?count=20'; echo" "$LLM_RESET" "curl -s -X POST 'http://127.0.0.1:8070/lab/fail?count=0'; echo"
   stop_llm
   start_llm FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=42
-  rec 1-5_wobble "흔들림 모드(1-5·11-1): FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=42로 가짜 LLM을 띄워 같은 자리표시 질문을 10번 → /lab/reset 뒤 다시 10번(같은 씨앗 = 같은 순서)" . \
+  rec 1-5_wobble "확률형 모드(1-5·11-1): FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=42로 가짜 LLM을 띄워 같은 자리표시 질문을 10번 → /lab/reset 뒤 다시 10번(같은 시드 = 같은 순서)" . \
     "curl -s http://127.0.0.1:8070/lab/config; echo" "./attack-kit/wobble.sh 10" "$LLM_RESET" "./attack-kit/wobble.sh 10"
   stop_llm
   python -I tools/fake_mcp.py > "$RUN/fake-mcp.log" 2>&1 &
@@ -419,10 +419,10 @@ phase_eval() {
     "for i in \$(seq 1 80); do curl -s -u dave:FAKE-pass-0000 -H 'Content-Type: application/json' -d \"{\\\"message\\\":\\\"배송 문의 \$i\\\"}\" -o .lab-run/last.json -w '%{http_code}\n' http://127.0.0.1:8080/api/chat; done | uniq -c" \
     "cat .lab-run/last.json; echo" "curl -s -u dave:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/usage; echo"
   stop_app; start_llm; start_app eval LAB_DEFENSE_OFF=secret_free_prompt
-  rec 12-4_switch-one-off "빨간불 ①: 스위치 하나만 끈 PR(프롬프트만 되돌림)을 로컬에서 — LAB_PROFILES=eval LAB_DEFENSE_OFF=secret_free_prompt(나머지 방어는 켜짐)(19장, 수업 12-4). quick(PR) → full(main)" eval-kit \
+  rec 12-4_switch-one-off "레드 ①: 스위치 하나만 끈 PR(프롬프트만 되돌림)을 로컬에서 — LAB_PROFILES=eval LAB_DEFENSE_OFF=secret_free_prompt(나머지 방어는 켜짐)(19장, 수업 12-4). quick(PR) → full(main)" eval-kit \
     "curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/flags; echo" "time python -m evalkit run --suite quick --gate" "time python -m evalkit run --suite full --gate"
   stop_app; start_llm; start_app eval LAB_DEFENSE_OFF=secret_free_prompt,output_schema
-  rec 12-4_output-check-off "빨간불 ①을 평가 게이트가 잡는 경우: 프롬프트를 되돌리고 출력 검사까지 끈 PR — LAB_DEFENSE_OFF=secret_free_prompt,output_schema(19장, 수업 12-4). quick → full" eval-kit \
+  rec 12-4_output-check-off "레드 ①을 평가 게이트가 잡는 경우: 프롬프트를 되돌리고 출력 검사까지 끈 PR — LAB_DEFENSE_OFF=secret_free_prompt,output_schema(19장, 수업 12-4). quick → full" eval-kit \
     "curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/flags; echo" "time python -m evalkit run --suite quick --gate" "time python -m evalkit run --suite full --gate"
   stop_app; stop_llm
 }
@@ -462,9 +462,9 @@ phase_evalbefore() {
 }
 
 phase_wobble() {
-  echo "[wobble] 흔들림 모드"
+  echo "[wobble] 확률형 모드"
   start_llm FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=7; start_app before,eval
-  rec 11-1_wobble_seed "흔들림 모드 — 가짜 LLM FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=7. 수정 전(before,eval)으로 같은 시험 10번, /lab/reset으로 난수를 되돌려 한 번 더 → 같은 씨앗이면 같은 결과. 마지막은 앱을 수정 후(eval)로 다시 띄워 같은 명령(흔들림 그대로)" eval-kit \
+  rec 11-1_wobble_seed "확률형 모드 — 가짜 LLM FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=7. 수정 전(before,eval)으로 같은 시험 10번, /lab/reset으로 난수를 되돌려 한 번 더 → 같은 시드면 같은 결과. 마지막은 앱을 수정 후(eval)로 다시 띄워 같은 명령(확률 그대로)" eval-kit \
     "curl -s http://127.0.0.1:8070/lab/config; echo" "$LLM_RESET" "python -m evalkit run --only C-LEAK-01,C-INJ-01,C-TOOL-01 --repeats 10" \
     "$LLM_RESET" "python -m evalkit run --only C-LEAK-01,C-INJ-01,C-TOOL-01 --repeats 10"
   stop_app; start_app eval
@@ -583,7 +583,7 @@ except ValueError as e:
     "grep -n 'reset_each_repeat' targets/shop-bot-py.yaml $tgt" \
     "time python -m evalkit run --target $tgt --suite full --gate"
   stop_app; stop_llm
-  rec 12-4_pr-simulation "PR 시뮬레이션(19장 19.7, 수업 12-4): 파일을 잠깐 바꾸고 llm-gate.yml 세 잡(pytest · eval-gate · llm-gate)의 명령을 그대로 → 되돌림. eval-gate는 needs가 없어 pytest가 빨개져도 돈다. ① 프롬프트·설정 PR(default.yaml 두 줄) ② 방어 코드 PR(cancel_order 한 줄) ③ 아무것도 안 바꾼 PR(기준)" . \
+  rec 12-4_pr-simulation "PR 시뮬레이션(19장 19.7, 수업 12-4): 파일을 잠깐 바꾸고 llm-gate.yml 세 잡(pytest · eval-gate · llm-gate)의 명령을 그대로 → 되돌림. eval-gate는 needs가 없어 pytest가 레드가 돼도 돈다. ① 프롬프트·설정 PR(default.yaml 두 줄) ② 방어 코드 PR(cancel_order 한 줄) ③ 아무것도 안 바꾼 PR(기준)" . \
     "bash scripts/simulate_pr.sh prompt" "bash scripts/simulate_pr.sh code" "bash scripts/simulate_pr.sh none"
 }
 

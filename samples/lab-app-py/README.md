@@ -35,9 +35,9 @@ python -m uvicorn shopbot.main:app --host 127.0.0.1 --port 8080
 - 방어 하나만 바꾸기: `LAB_DEFENSE_OFF=input_guard` / `LAB_DEFENSE_ON=secret_free_prompt`(스위치 11개 이름은 `shopbot/settings.py`)
 - 한 번에: `docker compose up --build`(평가 키트는 호스트에서 띄운 uvicorn에 붙인다. 컨테이너 안 eval 프로필은 403)
 
-## 수정 전/후 쌍 (빨강 → 초록)
+## 수정 전/후 쌍 (레드 → 그린)
 
-차례대로: 수정 후 49개 초록 → 수정 전 공격 테스트 23개 빨강 → 1~21장 전체(labcore 49 + 앱 12 = 61) → 22장 9개 초록 → 22장 수정 전 3개 빨강 → HTTP 계약(고정한 응답 본문) + 가짜 LLM 녹화 답 대조 → 평가 게이트 RED 43/50 → 평가 게이트 GREEN.
+차례대로: 수정 후 49개 그린 → 수정 전 공격 테스트 23개 레드 → 1~21장 전체(labcore 49 + 앱 12 = 61) → 22장 9개 그린 → 22장 수정 전 3개 레드 → HTTP 계약(고정한 응답 본문) + 가짜 LLM 녹화 답 대조 → 평가 게이트 RED 43/50 → 평가 게이트 GREEN.
 
 ```bash
 pytest tests/attack tests/unit

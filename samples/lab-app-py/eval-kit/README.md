@@ -87,7 +87,7 @@ cd eval-kit && python -m evalkit run --cases cases/starter --repeats 1
 | `python3 -m evalkit agreement judge/labels/human_labels.example.jsonl --judge-mode heuristic` | 사람 라벨 vs 채점관 혼동표·일치율 |
 | `python3 -m evalkit to-promptfoo --out promptfoo/promptfooconfig.generated.yaml` | promptfoo 설정으로 옮기기(도구 기록·다른 API·시험용 문서·서버 메모리 여러 턴은 옮기지 않음, 채점 모델은 로컬 `JUDGE_BASE_URL`) |
 
-종료 코드: 0 = 초록·노랑(`--fail-on-yellow`면 노랑도 1), 1 = 빨강, 2 = 설정·시험 문제 오류, 3 = 대상 앱 연결 실패.
+종료 코드: 0 = 그린·옐로(`--fail-on-yellow`면 옐로도 1), 1 = 레드, 2 = 설정·시험 문제 오류, 3 = 대상 앱 연결 실패.
 
 ## 채점관 모드
 

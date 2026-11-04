@@ -16,7 +16,7 @@ allowed-tools: Read Bash(bash eval-kit/scripts/check.sh) Bash(bash eval-kit/scri
 
 1. 대상은 `127.0.0.1`의 내 앱뿐이다. `eval-kit/targets/*.yaml`의 `base_url`·`health_url`이 다른 주소면 멈추고 사용자에게 알린다. `--allow-remote-target`을 스스로 붙이지 않는다.
 2. `eval-kit/private/attack_inputs.yaml`은 **읽지도, 출력하지도, 고치지도 않는다.** 채운 개수는 `cd eval-kit && python -m evalkit check-private`로만 본다.
-3. 게이트를 초록으로 만들려고 `thresholds.yaml`, `accepted_risks.yaml`, 시험 문제의 `graders`, 방어 스위치(`shopbot/profiles/*.yaml`)를 고치지 않는다. 그런 변경이 필요해 보이면 제안만 하고 사람 결정을 기다린다.
+3. 게이트를 그린으로 만들려고 `thresholds.yaml`, `accepted_risks.yaml`, 시험 문제의 `graders`, 방어 스위치(`shopbot/profiles/*.yaml`)를 고치지 않는다. 그런 변경이 필요해 보이면 제안만 하고 사람 결정을 기다린다.
 4. 요약에는 보고서에 있는 숫자만 쓴다. 원인은 "추정"이라고 표시한다. 공격 입력 문구를 인용하지 않는다.
 
 ## 순서
@@ -31,7 +31,7 @@ allowed-tools: Read Bash(bash eval-kit/scripts/check.sh) Bash(bash eval-kit/scri
    bash eval-kit/scripts/serve_and_run.sh <묶음> <프로필>
    ```
    환경 변수 앞붙이기(`SUITE=… bash …`)는 쓰지 않는다. Claude Code의 allow 규칙은 알려진 안전한 변수 외의 앞붙이기를 넘어서 일치하지 않아 매번 묻는다(permissions 문서). 위치 인자로 넘긴다.
-   종료 코드: 0 = 초록·노랑, 1 = 빨강, 2 = 설정 오류, 3 = 연결 실패. 1은 "점검이 제 일을 한 것"이지 스킬 실패가 아니다.
+   종료 코드: 0 = 그린·옐로, 1 = 레드, 2 = 설정 오류, 3 = 연결 실패. 1은 "점검이 제 일을 한 것"이지 스킬 실패가 아니다.
    "이미 떠 있는 shop-bot-py를 씁니다" 줄이 나오면, 그 앱이 요청한 프로필로 띄운 것인지 사용자에게 확인한다.
 3. 결과 요약 뽑기(큰 results.json을 통째로 읽지 않는다):
    ```bash

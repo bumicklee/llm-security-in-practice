@@ -46,7 +46,7 @@ LangChain API 이름이 확실하지 않으면 코드에 # 확인 필요 주석�
 
 ```text
 $ python -m pytest tests/unit/test_injection.py tests/attack/test_prompt_injection.py -q
-(초록) — 4,000자 입력은 400 INPUT_REJECTED, 모델 호출 0회
+(그린) — 4,000자 입력은 400 INPUT_REJECTED, 모델 호출 0회
 ```
 
 ## 주의
