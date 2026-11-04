@@ -1,4 +1,4 @@
-# 빨간불 ②: AuthorizedOrderTools.cancel_order의 소유권 확인 줄을 지운 PR을 로컬에서. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)
+# 레드 ②: AuthorizedOrderTools.cancel_order의 소유권 확인 줄을 지운 PR을 로컬에서. 임시로 바꾼 뒤 되돌린다(원본 사본은 .lab-run/)(19장, 수업 12-4)
 # 실행 시각: 2026-10-28 09:11:58 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
 $ cp labcore/tools/__init__.py .lab-run/tools.py.orig && python -c "
 p='labcore/tools/__init__.py'; s=open(p).read()

@@ -9,7 +9,7 @@
 | [llm-security-review/SKILL.md](llm-security-review/SKILL.md) | 출시 전 체크리스트 C01~C20으로 읽기 전용 점검·PR 리뷰(입력 검사 의존성·출력 스키마·테넌트 필터·도구 허용 목록·승인·레이트 리밋·PII 마스킹·트레이싱 변수·훅 fail closed) | 20장 20.5·21장 21.5 · 13-3·13-7 | 앞머리 YAML 파싱 |
 | [llm-security-review/checklist.md](llm-security-review/checklist.md) | 20항목 원본(20장 표 20-1·부록 B와 같음) + 스캐너 전용 C00·H01~H03 | 20장 · 13-3 | 표 20-1과 줄 대조 |
 | [llm-security-review/scripts/scan.sh](llm-security-review/scripts/scan.sh) | grep으로 단서 찾기(판정 아님). 파일·네트워크 건드리지 않음, `.env` 열지 않음 | 20장 | `bash -n`, `samples/lab-app-py`에 실행 |
-| [llm-attack-tests/SKILL.md](llm-attack-tests/SKILL.md) | 가짜 채팅 모델(`BaseChatModel`)·가짜 LLM으로 결정적 pytest 공격 테스트 만들기, `--lab-target=before`로 빨강 확인 | 12장 · 7-2·7-3 · 22장 14-3 | 앞머리 YAML 파싱 |
+| [llm-attack-tests/SKILL.md](llm-attack-tests/SKILL.md) | 가짜 채팅 모델(`BaseChatModel`)·가짜 LLM으로 결정적 pytest 공격 테스트 만들기, `--lab-target=before`로 레드 확인 | 12장 · 7-2·7-3 · 22장 14-3 | 앞머리 YAML 파싱 |
 | [llm-case-writer/SKILL.md](llm-case-writer/SKILL.md) | 정상 질문·회귀·변형 시험 문제 작성, 공격 유형은 자리표시 뼈대만 | 14·15·18·21·22장 · 9-1, 11-4, 13-4, 14-3 | 앞머리 YAML 파싱 |
 | [llm-release-check/SKILL.md](llm-release-check/SKILL.md) | 키트 점검 → `serve_and_run.sh` 실행 → 출시 판단 요약(가능·조건부·불가 + 이유 3줄 + 역할별). 사람이 부를 때만 | 19·20장 · 12-2~12-4, 13-1 | 앞머리 YAML 파싱 |
 | [llm-release-check/scripts/summarize.py](llm-release-check/scripts/summarize.py) | results.json 짧은 요약(표준 라이브러리, `python3 -I`) | 20장 | 랩 results.json 3개로 실행 |
@@ -56,7 +56,7 @@ bash .claude/hooks/test-hooks.sh
 | --- | --- |
 | allow: `python -m pytest *`·`pytest *`, `uvicorn shopbot.main:app --host 127.0.0.1 *`·`python -m uvicorn shopbot.main:app --host 127.0.0.1 *`, 가짜 LLM·가짜 MCP(`python -I tools/fake_*.py`), `mcp_tool_review.py`, `check-attack-ids.py`, `scan.sh`, `summarize.py`, `test-hooks.sh`, `evalkit validate/list/check-private`, `check.sh`, `serve_and_run.sh` | 테스트·랩 기동·읽기·점검 명령은 매번 묻지 않게 |
 | ask: `flood.sh`·`run-attacks.sh`·`wobble.sh`·`docker compose` | 요청을 많이 보내거나 컨테이너를 띄우는 명령은 사람이 본다 |
-| ask: `Edit(./.github/workflows/**)`, `thresholds.yaml`, `accepted_risks.yaml`, `eval-kit/ci/**`, `requirements.lock`, `shopbot/profiles/**` | 게이트 기준·수용한 위험·워크플로·잠금 파일·방어 스위치는 사람이 정한다(AI가 초록불을 만들지 않게, 19장) |
+| ask: `Edit(./.github/workflows/**)`, `thresholds.yaml`, `accepted_risks.yaml`, `eval-kit/ci/**`, `requirements.lock`, `shopbot/profiles/**` | 게이트 기준·수용한 위험·워크플로·잠금 파일·방어 스위치는 사람이 정한다(AI가 그린을 만들지 않게, 19장) |
 | deny: `.env`, 비공개 입력 파일 읽기·수정, `git push` | 비밀·공격 문구가 대화·로그로 새지 않게 |
 | deny: `python -m evalkit *--allow-remote-target*`와 `python3` 형태 둘 다 | 내 PC 밖 대상 시험을 AI가 시작하지 않게 |
 | deny: `uvicorn *0.0.0.0*`(`python -m uvicorn` 형태 포함) | 랩을 모든 네트워크에 여는 실행을 막는다(allow의 `--host 127.0.0.1 *` 뒤에 `--host 0.0.0.0`을 덧붙인 모양도 여기서 걸린다) |

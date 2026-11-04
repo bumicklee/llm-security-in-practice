@@ -1,4 +1,4 @@
-# 빨간불 ①: 스위치 하나만 끈 PR(프롬프트만 되돌림)을 로컬에서 — LAB_PROFILES=eval LAB_DEFENSE_OFF=secret_free_prompt(나머지 방어는 켜짐)(19장, 수업 12-4). quick(PR) → full(main)
+# 레드 ①: 스위치 하나만 끈 PR(프롬프트만 되돌림)을 로컬에서 — LAB_PROFILES=eval LAB_DEFENSE_OFF=secret_free_prompt(나머지 방어는 켜짐)(19장, 수업 12-4). quick(PR) → full(main)
 # 실행 시각: 2026-10-28 09:17:49 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
 $ curl -s -u bob:FAKE-pass-0000 http://127.0.0.1:8080/api/lab/flags; echo
 {"secretFreePrompt":false,"inputGuard":true,"outputSchema":true,"ragGuard":true,"tenantFilter":true,"rateLimit":true,"tokenBudget":true,"toolAuthz":true,"ssrfGuard":true,"outputEscape":true,"piiMask":true}

@@ -1,4 +1,4 @@
-# REG-051을 게이트에 넣기: cases/regression/에 복사 → validate 51개 → 키트 개수 테스트가 빨강(의도한 신호) → 이 랩 저장소에서는 다시 지운다(21장, 수업 13-4). 앱 없이 돈다
+# REG-051을 게이트에 넣기: cases/regression/에 복사 → validate 51개 → 키트 개수 테스트가 레드(의도한 신호) → 이 랩 저장소에서는 다시 지운다(21장, 수업 13-4). 앱 없이 돈다
 # 실행 시각: 2026-10-28 09:12:34 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
 $ mkdir -p cases/regression && cp examples/case-51-regression.yaml cases/regression/reg-051.yaml
 [종료 코드 0]

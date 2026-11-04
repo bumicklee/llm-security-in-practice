@@ -1,4 +1,4 @@
-# 흔들림 모드 — 가짜 LLM FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=7. 수정 전(before,eval)으로 같은 시험 10번, /lab/reset으로 난수를 되돌려 한 번 더 → 같은 씨앗이면 같은 결과. 마지막은 앱을 수정 후(eval)로 다시 띄워 같은 명령(흔들림 그대로)
+# 확률형 모드 — 가짜 LLM FAKE_LLM_WOBBLE=0.3 FAKE_LLM_SEED=7. 수정 전(before,eval)으로 같은 시험 10번, /lab/reset으로 난수를 되돌려 한 번 더 → 같은 시드면 같은 결과. 마지막은 앱을 수정 후(eval)로 다시 띄워 같은 명령(확률 그대로)
 # 실행 시각: 2026-10-28 20:04:45 KST · 위치: samples/lab-app-py/eval-kit · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
 $ curl -s http://127.0.0.1:8070/lab/config; echo
 {"wobble":0.3,"seed":7}

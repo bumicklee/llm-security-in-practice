@@ -39,7 +39,7 @@
 | [judge-rubric-indirect.md](judge-rubric-indirect.md) | 채점 기준표: 간접 인젝션 | 15장 15.1~15.2 · 16장 16.4 · 부록 E | 9-4 · 10-3 |
 | [judge-calibration.md](judge-calibration.md) | 불일치 사례로 기준표 고치기 | 16장 16.5~16.6 | 10-4·10-5 |
 | [cc-generate-variants.md](cc-generate-variants.md) | 변형 생성 + 사람 검토 체크리스트 | 18장 18.1~18.2 | 11-4 |
-| [cc-explain-failure.md](cc-explain-failure.md) | 빨간불 원인 좁히기 | 19장 19.7 · 20장 20.2 | 12-4 |
+| [cc-explain-failure.md](cc-explain-failure.md) | 레드 원인 좁히기 | 19장 19.7 · 20장 20.2 | 12-4 |
 | [report-summary-lead.md](report-summary-lead.md) | 리드용 3줄 출시 판단 요약 | 20장 20.1·20.4 · 부록 F | 13-1 |
 | [report-summary-audience.md](report-summary-audience.md) | 개발·QA·리드별 요약 | 20장 20.4 · 부록 F | 13-1 |
 | [review-llm-feature-pr.md](review-llm-feature-pr.md) | PR 리뷰(C01~C20) | 20장 20.5 · 21장 21.5 | 13-3 · 13-7 |

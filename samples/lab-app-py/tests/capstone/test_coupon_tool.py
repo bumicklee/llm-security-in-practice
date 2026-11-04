@@ -1,5 +1,5 @@
 """22장 종합 실습의 pytest 2개. 쿠폰 발급 도구(ToolRisk.MONEY)의 소유권·직원 승인·승인자 분리·한도·주문당 1회.
---lab-target=before 이면 수정 전 구현(TrustingCouponTools: 확인 없이 바로 발급) → 두 테스트 모두 빨강.
+--lab-target=before 이면 수정 전 구현(TrustingCouponTools: 확인 없이 바로 발급) → 두 테스트 모두 레드.
 실행: pytest -m capstone [--lab-target=before]
 """
 import pytest

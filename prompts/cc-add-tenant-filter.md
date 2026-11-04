@@ -18,7 +18,7 @@
      문자열을 f-string·+ 로 이어 붙인 필터는 SQL 문자열 이어 붙이기와 같은 위험이라고 주석을 단다.
    - 직원은 같은 테넌트의 INTERNAL 문서까지, 고객은 PUBLIC만.
 4. pytest {테스트_파일}: 테넌트 A 사용자로 B 문서가 안 나온다, 질문에 B 이름을 적어도 안 나온다, B 사용자도 A 내부 문서를 못 본다.
-   같은 테스트를 수정 전 구현(필터 없음)에 돌리면 빨강이어야 한다.
+   같은 테스트를 수정 전 구현(필터 없음)에 돌리면 레드여야 한다.
 5. 바뀐 부분만 diff로. 저장소 API 이름이 확실하지 않으면 # 확인 필요.
 ```
 
@@ -41,7 +41,7 @@ tests/attack/test_tenant_isolation.py::test_질문에_다른_테넌트_이름을
 tests/attack/test_tenant_isolation.py::test_shop_b_사용자도_shop_a_내부_문서를_못_본다 PASSED
 ```
 
-실측: `samples/lab-app-py/_실측/3-5_pytest-before-tenant.txt`(수정 전 빨강), `3-7_pytest-tenant-after.txt`(수정 후 4 passed). Redis 질의 문자열(방법 B)은 `shopbot/rag/redis_store.py`의 `tenant_query`·`escape_tag`.
+실측: `samples/lab-app-py/_실측/3-5_pytest-before-tenant.txt`(수정 전 레드), `3-7_pytest-tenant-after.txt`(수정 후 4 passed). Redis 질의 문자열(방법 B)은 `shopbot/rag/redis_store.py`의 `tenant_query`·`escape_tag`.
 
 ## 주의
 

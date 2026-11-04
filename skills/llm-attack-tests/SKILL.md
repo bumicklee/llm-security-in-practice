@@ -24,8 +24,8 @@ argument-hint: "[테스트 폴더] [구멍: injection|rag|tenant|rate|budget|too
 3. **테스트 쓰기.** 파일마다 한 구멍: `test_prompt_injection.py`, `test_indirect_injection.py`, `test_tenant_isolation.py`, `test_rate_limit.py`, `test_token_budget.py`, `test_cache_isolation.py`, `test_tool_authorization.py`, `test_ssrf.py`, `test_output_and_log.py`. 각 파일에 **정상 사용자 통과** 테스트를 하나씩 넣어 과잉 차단을 잡는다. 함수 이름은 한국어로 써도 된다(`test_bob은_alice의_주문을_취소할_수_없다`). 각 테스트 위에 주석: 목적 / 막는 코드 위치 / 대응 장.
 4. **수정 전/후 전환.** `conftest.py`의 `pytest_addoption`으로 `--lab-target=before|after` 같은 옵션을 만들고, 조립 함수 하나가 옵션에 따라 수정 전/후 구현을 준다. 테스트 본문은 두 경우 모두 같다(계약만 적는다).
 5. **FastAPI 통합 테스트.** `TestClient` + 앱 팩토리로 **테스트마다 새 앱**을 만든다(모듈 전역 버킷·장부는 테스트 사이에 남는다). 채팅 모델 의존성은 `app.dependency_overrides[모델 의존성] = lambda: stub`으로 바꾼다. 로그인은 가짜 계정(HTTP Basic 등).
-6. **빨강 확인.** 방어를 끈 상태(`--lab-target=before` 또는 설정 스위치)에서 테스트가 실패하는지 보여 준다. 실패하지 않으면 테스트가 방어 코드를 안 지나는 것이므로 고친다.
-7. **초록 확인.** 방어를 켠 상태에서 통과. 사용자 허락을 받고 `python -m pytest <테스트 폴더> -q`를 실행해 마지막 줄을 보여 준다.
+6. **레드 확인.** 방어를 끈 상태(`--lab-target=before` 또는 설정 스위치)에서 테스트가 실패하는지 보여 준다. 실패하지 않으면 테스트가 방어 코드를 안 지나는 것이므로 고친다.
+7. **그린 확인.** 방어를 켠 상태에서 통과. 사용자 허락을 받고 `python -m pytest <테스트 폴더> -q`를 실행해 마지막 줄을 보여 준다.
 8. **CI 제안.** `.github/workflows/`에 PR마다 pytest를 도는 잡을 제안한다(비밀값·네트워크 모델 없이 돌아야 한다. 잠금 파일 `--require-hashes` 설치).
 
 ## 규칙
@@ -40,5 +40,5 @@ argument-hint: "[테스트 폴더] [구멍: injection|rag|tenant|rate|budget|too
 ## 참고
 
 - 랩 정답: `samples/lab-app-py/tests/attack/`(조립기 `lab.py`, 전환 `--lab-target=before`), `tests/app/stub_model.py`(`StubChatModel`), `tests/app/conftest.py`(`make_client`), `tests/conftest.py`(`pytest_addoption`), 가짜 LLM `labcore/llm/__init__.py`(`ScriptedFakeLlm`)
-- 랩 숫자: `pytest tests/attack tests/unit` 49개 초록, `--lab-target=before`면 23개 빨강(`_실측/1-2_pytest-count.txt`, `12-4_pytest-before.txt`)
+- 랩 숫자: `pytest tests/attack tests/unit` 49개 그린, `--lab-target=before`면 23개 레드(`_실측/1-2_pytest-count.txt`, `12-4_pytest-before.txt`)
 - 프롬프트판: `prompts/cc-write-attack-tests.md`

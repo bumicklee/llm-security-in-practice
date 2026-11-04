@@ -1,9 +1,9 @@
-# 목적: PR마다 "앱 안 증거(pytest)"와 "앱 밖 시험(평가 키트 게이트)"을 돌리고, 하나라도 빨강이면 머지를 막는다(19장, 수업 12-2·12-4).
+# 목적: PR마다 "앱 안 증거(pytest)"와 "앱 밖 시험(평가 키트 게이트)"을 돌리고, 하나라도 레드면 머지를 막는다(19장, 수업 12-2·12-4).
 #   잡 1 pytest    : Python 3.11·3.14 두 버전. labcore 공격·단위 테스트 + FastAPI 앱 테스트(가짜 채팅 모델) → 22장 capstone → 계약
 #   잡 2 eval-gate : tools/fake_llm.py(127.0.0.1:8070) → uvicorn(LAB_PROFILES=eval, 127.0.0.1:8080) → python -m evalkit run --gate
 #                    PR = quick 묶음, main push·수동 실행 = full 묶음. 기준선 = main의 마지막 성공 full 산출물(download-artifact + run-id)
-#   잡 3 llm-gate  : 두 잡의 결과를 모아 하나라도 성공이 아니면 빨강(요약 표를 실행 요약에 붙인다)
-# 두 잡은 서로 기다리지 않는다(needs 없음). pytest가 빨개져도 eval-gate는 끝까지 돈다 → "프롬프트·설정을 고친 PR"은
+#   잡 3 llm-gate  : 두 잡의 결과를 모아 하나라도 성공이 아니면 레드(요약 표를 실행 요약에 붙인다)
+# 두 잡은 서로 기다리지 않는다(needs 없음). pytest가 레드가 돼도 eval-gate는 끝까지 돈다 → "프롬프트·설정을 고친 PR"은
 #   pytest가 잡든 못 잡든 평가 게이트의 판정(quick 7건 등)이 PR 화면에 함께 남는다(2차 교차 검증 B F-01, _실측/12-4_pr-simulation.txt).
 #   대신 방어 코드를 지운 PR도 eval-gate가 돈다(러너 몇 분). 비용보다 "두 층이 각자 본 것"을 다 보이는 쪽을 골랐다.
 # 비밀 값은 쓰지 않는다(가짜 LLM이라 키가 필요 없다). 실제 모델은 eval-kit/ci/llm-gate-selfhosted.yml(선택)
@@ -17,7 +17,7 @@
 #   samples/lab-app-py/ 아래에 있어 맨 위 .github/workflows/llm-gate.yml(_tools/make_root_workflow.py로 만든 사본, 작업 폴더 samples/lab-app-py)로 돈다.
 #   main push(full, 50개 통과) 전체 1m 25s · eval-gate 1m 14s · pytest 36~44s: https://github.com/bumicklee/llm-security-in-practice/actions/runs/40807536475
 #   PR(quick) 전체 55s · eval-gate 37~44s · pytest 22~32s. PR 보고서가 main 실행(20261029-023932)을 기준선으로 받아 비교했고,
-#   llm-gate 필수 상태 검사로 빨간 PR의 Merge 버튼이 잠겼다(시연 PR #1~#3은 닫음). 로컬 검사도 그대로 둔다: YAML 파싱·run 블록 bash -n·
+#   llm-gate 필수 상태 검사로 레드 PR의 Merge 버튼이 잠겼다(시연 PR #1~#3은 닫음). 로컬 검사도 그대로 둔다: YAML 파싱·run 블록 bash -n·
 #   SHA 고정 검사(_실측/12-2_workflow-yaml-check.txt), 두 잡의 명령을 그대로 흉내 낸 PR 시뮬레이션(_실측/12-4_pr-simulation.txt).
 name: llm-gate
 
@@ -159,7 +159,7 @@ jobs:
           if-no-files-found: ignore
 
   llm-gate:
-    # 필수 상태 검사로 지정할 잡. 두 잡이 모두 success일 때만 초록. 하나라도 failure·cancelled·skipped면 빨강
+    # 필수 상태 검사로 지정할 잡. 두 잡이 모두 success일 때만 그린. 하나라도 failure·cancelled·skipped면 레드
     needs: [pytest, eval-gate]
     if: always()
     runs-on: ubuntu-latest
@@ -181,5 +181,5 @@ jobs:
           if [ "$PYTEST_RESULT" = success ] && [ "$EVAL_RESULT" = success ]; then
             echo "llm-gate: GREEN — 두 층 모두 통과"
           else
-            echo "llm-gate: RED — 머지 불가(빨간 층의 로그를 본다)"; exit 1
+            echo "llm-gate: RED — 머지 불가(레드 층의 로그를 본다)"; exit 1
           fi

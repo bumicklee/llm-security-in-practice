@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # PR 하나를 로컬에서 흉내 낸다: 파일을 잠깐 바꾸고 → .github/workflows/llm-gate.yml의 세 잡 명령을 차례로 → 되돌린다(19장, 수업 12-4).
-#   잡 pytest    : 워크플로와 같은 세 단계(공격·단위·앱 → capstone → contract). 한 단계가 빨개지면 그 잡의 뒤 단계는 건너뛴다(Actions와 같다)
+#   잡 pytest    : 워크플로와 같은 세 단계(공격·단위·앱 → capstone → contract). 한 단계가 레드가 되면 그 잡의 뒤 단계는 건너뛴다(Actions와 같다)
 #   잡 eval-gate : 키트 점검 → 가짜 LLM(127.0.0.1:8070)·uvicorn(LAB_PROFILES=eval, 127.0.0.1:8080) → quick 묶음 --gate
 #                  워크플로에 needs가 없으므로 pytest 결과와 상관없이 돈다
 #   잡 llm-gate  : 두 결과를 모은다(둘 다 success일 때만 GREEN)
 # 실행(lab-app-py 폴더, .venv 켠 상태): bash scripts/simulate_pr.sh <none|prompt|code>
 #   none   : 아무것도 바꾸지 않은 PR(기준)
-#   prompt : 빨간불 ① 프롬프트·설정을 고친 PR — shopbot/profiles/default.yaml의 secret_free_prompt·output_schema를 false로
-#   code   : 빨간불 ② 방어 코드를 지운 PR — labcore/tools의 cancel_order 소유권 확인 줄을 repo.find로
+#   prompt : 레드 ① 프롬프트·설정을 고친 PR — shopbot/profiles/default.yaml의 secret_free_prompt·output_schema를 false로
+#   code   : 레드 ② 방어 코드를 지운 PR — labcore/tools의 cancel_order 소유권 확인 줄을 repo.find로
 # 바꾼 파일은 .lab-run/에 원본을 두고, 끝나면(오류·Ctrl+C 포함) 되돌린다. 기준선 비교(--compare)·산출물 올리기는 GitHub에서만 한다.
 # 모든 값은 가짜, 127.0.0.1만. 8070·8080·8081·8082 포트가 비어 있어야 한다.
 set -uo pipefail
@@ -85,6 +85,6 @@ echo "  → eval-gate: $EVAL"
 echo
 echo "[잡 llm-gate] pytest=$PYTEST eval-gate=$EVAL"
 if [ "$PYTEST" = success ] && [ "$EVAL" = success ]; then echo "llm-gate: GREEN — 두 층 모두 통과"; CODE=0
-else echo "llm-gate: RED — 머지 불가(빨간 층의 로그를 본다)"; CODE=1; fi
+else echo "llm-gate: RED — 머지 불가(레드 층의 로그를 본다)"; CODE=1; fi
 restore
 exit $CODE

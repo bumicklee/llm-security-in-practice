@@ -1,4 +1,4 @@
-# 22장 종합 실습 pytest — 수정 전(-m capstone --lab-target=before). 쿠폰 도구 테스트 2개가 빨강(labcore), FastAPI 연결 1개도 빨강
+# 22장 종합 실습 pytest — 수정 전(-m capstone --lab-target=before). 쿠폰 도구 테스트 2개가 레드(labcore), FastAPI 연결 1개도 레드
 # 실행 시각: 2026-10-28 09:12:04 KST · 위치: samples/lab-app-py · macOS 26.6.2 · Python 3.14.6 · 모든 값은 가짜, 127.0.0.1만
 $ pytest -m capstone --lab-target=before -v --tb=short 2>&1 | grep -E 'PASSED|FAILED|^E +AssertionError|passed|failed'
 tests/capstone/test_approval_separation.py::test_도구마다_승인자가_다르다 PASSED [ 11%]

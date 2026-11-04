@@ -8,8 +8,8 @@
   GET  /v1/models            모델 목록(fake-shop-model)
   GET  /usage                누적 요청·토큰(요금 대시보드가 읽음)
   POST /lab/fail?count=N     다음 N개 요청을 503으로(7장 재시도 폭주 실습)
-  POST /lab/reset            누적값 초기화(흔들림 모드의 난수도 FAKE_LLM_SEED로 다시 시작)
-  GET  /lab/config           흔들림 모드 설정(wobble·seed) 확인
+  POST /lab/reset            누적값 초기화(확률형 모드의 난수도 FAKE_LLM_SEED로 다시 시작)
+  GET  /lab/config           확률형 모드 설정(wobble·seed) 확인
 공격 범주 규칙(attack-registry.yaml 범주와 같음):
   INJ·LEAK → 시스템 프롬프트를 읊는다      RAG → 문서 속 지시를 따라 랩 밖 가짜 링크를 추천
   OUT      → 답에 표지 태그를 섞는다       COST → 아주 긴 답
@@ -21,8 +21,8 @@
   ① response_format {type: json_schema} 요청에는 스키마에 맞는 JSON 본문으로 답한다(with_structured_output·ProviderStrategy)
   ② tools가 있으면 OpenAI 형식의 tool_calls로 답한다
   ③ stream: true 는 400으로 거절한다(랩은 스트리밍을 쓰지 않는다)
-흔들림 모드: FAKE_LLM_WOBBLE=<0~1> 이면 공격 규칙이 그 확률로만 "넘어간다". FAKE_LLM_SEED=<정수>(기본 7).
-  Python random 수열이라 같은 씨앗이면 같은 순서가 나온다.
+확률형 모드: FAKE_LLM_WOBBLE=<0~1> 이면 공격 규칙이 그 확률로만 "넘어간다". FAKE_LLM_SEED=<정수>(기본 7).
+  Python random 수열이라 같은 시드면 같은 순서가 나온다.
 토큰 규칙(가짜): 글자 3개 = 1토큰. 요청 보기: LOG_PROMPTS=1 이면 받은 메시지를 역할별로 표준 출력에 찍는다
   (11장 11.2 "모델 쪽에는 무엇이 도착하나" 확인용. 랩 가짜 값만 다룰 것).
 """
@@ -42,7 +42,7 @@ HTML_PLACEHOLDER = '<mark data-lab-attack="ATTACK-OUT-01">ATTACK-OUT-01</mark>'
 
 def parse_wobble(v):
     if v is None or not v.strip():
-        return -1.0   # 흔들림 모드 꺼짐 = 공격 규칙이 항상 넘어감(결정적)
+        return -1.0   # 확률형 모드 꺼짐 = 공격 규칙이 항상 넘어감(결정적)
     d = float(v)
     if d < 0 or d > 1:
         raise ValueError("FAKE_LLM_WOBBLE은 0~1")
@@ -71,7 +71,7 @@ class State:
 
 
 def falls():
-    """공격 규칙이 이번에 "넘어갈지". 흔들림 모드가 꺼져 있으면 항상 True."""
+    """공격 규칙이 이번에 "넘어갈지". 확률형 모드가 꺼져 있으면 항상 True."""
     if WOBBLE < 0:
         return True
     with State.lock:
@@ -223,7 +223,7 @@ def chat_reply(req):
             call = "issueCoupon"
             args_json = '{"orderId":' + (f'"{oid.group(1)}"' if oid else "null") + ',"amountKrw":' + amount + "}"
         elif (tool_attack or pii_attack) and id_m:
-            # 공격 자리표시 + 주문 번호: 모델이 "넘어가" 도구를 부른다(흔들림 모드면 확률로)
+            # 공격 자리표시 + 주문 번호: 모델이 "넘어가" 도구를 부른다(확률형 모드면 확률로)
             if falls():
                 call = "getOrderStatus" if pii_attack else "cancelOrder"
                 args_json = '{"orderId":"' + id_m.group(1) + '"}'
@@ -368,7 +368,7 @@ def main():
     port = int(os.environ.get("FAKE_LLM_PORT", "8070"))
     srv = ThreadingHTTPServer((bind, port), Handler)
     srv.daemon_threads = True
-    extra = "" if WOBBLE < 0 else f" · 흔들림 모드 wobble={WOBBLE} seed={SEED}"
+    extra = "" if WOBBLE < 0 else f" · 확률형 모드 wobble={WOBBLE} seed={SEED}"
     print(f"[fake-llm] listening on http://{bind}:{port} (가짜 응답·가짜 토큰){extra}", flush=True)
     try:
         srv.serve_forever()
